@@ -1,12 +1,8 @@
 <template>
   <header class="main-header" :class="{ 'header-scrolled': isScrolled }">
     <div class="header-left">
-      <div class="logo">
-        <svg class="logo-icon" viewBox="0 0 24 24" fill="currentColor">
-           <path d="M16.5 12l-4.5 4.5-1.4-1.4 3.1-3.1-3.1-3.1 1.4-1.4 4.5 4.5zM7.5 12l4.5-4.5 1.4 1.4-3.1 3.1 3.1 3.1-1.4 1.4-4.5-4.5z"/>
-        </svg>
-        EcoWave
-      </div>
+     <img class="img-logo" src="../assets/img/logo6.png" alt="">
+      
     </div>
 
     <nav class="header-center">
@@ -134,7 +130,10 @@ export default {
   letter-spacing: 2px;
   transition: opacity 0.5s ease;
 }
-
+.img-logo{
+  height: 10vh;
+  width: 20vh;
+}
 /* NAVEGAÇÃO CENTRAL */
 .header-center {
   display: flex;
@@ -148,7 +147,10 @@ export default {
   position: static; 
   padding: 35px 0; 
 }
-
+.logo-img{
+  background-color: red;
+  height: 50vh;
+}
 .links {
   font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
