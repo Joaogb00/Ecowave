@@ -11,7 +11,7 @@
     </div>
 
     <div class="hero-content">
-      <div class="text-wrapper">
+      <div class="text-wrapper reveal">
         <h1 class="fade-in-text">EcoWave: O futuro <br><span>do descarte.</span></h1>
         <p class="fade-in-text-delay">
           Logística reversa inteligente e soluções sustentáveis para marcas que
@@ -19,9 +19,15 @@
         </p>
       </div>
 
-      <div class="hero-actions fade-in-text-delay-btn">
+      <div class="hero-actions fade-in-text-delay-btn reveal">
         <button class="btn-primary">COMEÇAR AGORA</button>
         <button class="btn-secondary">NOSSO MANIFESTO</button>
+      </div>
+    </div>
+
+    <div class="scroll-indicator reveal">
+      <div class="mouse">
+        <div class="wheel"></div>
       </div>
     </div>
 
@@ -67,8 +73,6 @@
         </div>
       </transition>
     </div>
-
-
   </section>
 </template>
 
@@ -86,9 +90,8 @@ export default {
       isTyping: false,
       messages: [
         { type: 'bot', text: 'Olá! Bem-vindo à EcoWave. Como posso ajudar seu negócio hoje?' },
-        { type: 'menu', text: 'Digite o número ou clique na opção:\n1.  Como funciona o descarte\n2.  Soluções para Empresas\n3.  Tecnologia Utilizada\n4.  Falar com Consultor' }
+        { type: 'menu', text: 'Digite o número ou clique na opção:\n1. Como funciona o descarte\n2. Soluções para Empresas\n3. Tecnologia Utilizada\n4. Falar com Consultor' }
       ],
-      // Mapeamento das respostas por número
       opcoes: {
         '1': "Nossos pontos de coleta inteligentes rastreiam resíduos via IoT, garantindo que 100% do material seja reciclado corretamente.",
         '2': "Oferecemos logística reversa personalizada e dashboards de impacto ESG para marcas que buscam sustentabilidade real.",
@@ -99,6 +102,7 @@ export default {
   },
   mounted() {
     window.addEventListener('scroll', this.handleScroll);
+    this.initScrollReveal();
   },
   unmounted() {
     window.removeEventListener('scroll', this.handleScroll);
@@ -110,36 +114,41 @@ export default {
     scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     },
+    initScrollReveal() {
+      const observerOptions = {
+        threshold: 0.15
+      };
 
-    // Método para quando o usuário digita
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active-reveal');
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    },
     sendMessage() {
       const input = this.userQuery.trim();
       if (!input) return;
-
       this.messages.push({ type: 'user', text: input });
       this.userQuery = '';
       this.processarOpcao(input);
     },
-
-    // Processa a escolha do usuário
     processarOpcao(escolha) {
       this.isTyping = true;
       this.scrollToBottom();
-
       setTimeout(() => {
         this.isTyping = false;
-
-        // Verifica se o que foi digitado corresponde a uma opção (1, 2, 3 ou 4)
         if (this.opcoes[escolha]) {
           this.messages.push({ type: 'bot', text: this.opcoes[escolha] });
         } else {
-          this.messages.push({ type: 'bot', text: "Desculpe, não entendi. Escolha um número de 1 a 4 para continuar." });
+          this.messages.push({ type: 'bot', text: "Desculpe, não entendi. Escolha um número de 1 a 4." });
         }
-
         this.scrollToBottom();
       }, 800);
     },
-
     scrollToBottom() {
       this.$nextTick(() => {
         const box = this.$refs.chatBox;
@@ -151,7 +160,20 @@ export default {
 </script>
 
 <style scoped>
-/* --- ESTILOS GERAIS (MANTIDOS) --- */
+/* --- LÓGICA DE REVELAÇÃO (O QUE VOCÊ PEDIU) --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+.active-reveal {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+/* --- ESTILOS GERAIS --- */
 .hero-principal {
   position: relative;
   width: 100%;
@@ -219,7 +241,6 @@ p {
   color: rgba(255, 255, 255, 0.8);
 }
 
-/* --- BOTÕES HERO --- */
 .hero-actions {
   display: flex;
   gap: 20px;
@@ -234,7 +255,6 @@ p {
   letter-spacing: 1px;
   cursor: pointer;
   transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-  border-radius: 4px;
 }
 
 .btn-primary {
@@ -281,20 +301,6 @@ p {
   justify-content: center;
   cursor: pointer;
   transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-}
-
-.chat-trigger:hover,
-.back-to-top:hover {
-  background: #fff;
-  color: #000;
-  transform: translateY(-5px);
-}
-
-.chat-trigger.active {
-  background: #fff;
-  color: #000;
-  transform: rotate(90deg);
 }
 
 .back-to-top {
@@ -320,20 +326,17 @@ p {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
   transform-origin: bottom right;
 }
 
 .chat-header {
   padding: 18px;
-  background: rgba(255, 255, 255, 0.03);
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 0.75rem;
   font-weight: 700;
   color: #fff;
-  letter-spacing: 1px;
 }
 
 .status-dot {
@@ -341,7 +344,6 @@ p {
   height: 8px;
   background: #00ff88;
   border-radius: 50%;
-  box-shadow: 0 0 10px #00ff88;
 }
 
 .chat-messages {
@@ -351,90 +353,28 @@ p {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  scrollbar-width: none;
 }
 
-/* --- MESSAGES & MENU --- */
 .msg {
   max-width: 90%;
   padding: 12px 16px;
   border-radius: 18px;
   font-size: 0.85rem;
-  line-height: 1.5;
 }
 
 .msg.bot {
   background: rgba(255, 255, 255, 0.08);
   align-self: flex-start;
   color: #eee;
-  border-bottom-left-radius: 4px;
 }
 
 .msg.user {
   background: #fff;
   color: #000;
   align-self: flex-end;
-  border-bottom-right-radius: 4px;
   font-weight: 500;
 }
 
-/* Estilo do Menu de Opções */
-.menu-container {
-  width: 100%;
-}
-
-.menu-title {
-  margin-bottom: 12px;
-  font-weight: 600;
-  color: #fff;
-  font-size: 0.8rem;
-}
-
-.menu-options {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.menu-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #fff;
-  padding: 10px 14px;
-  border-radius: 12px;
-  text-align: left;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.menu-btn:hover {
-  background: #fff;
-  color: #000;
-  border-color: #fff;
-  transform: translateX(5px);
-}
-
-.btn-number {
-  font-weight: 800;
-  background: rgba(255, 255, 255, 0.1);
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 0.7rem;
-}
-
-.menu-btn:hover .btn-number {
-  background: rgba(0, 0, 0, 0.1);
-}
-
-/* --- INPUT --- */
 .chat-input {
   padding: 15px;
   display: flex;
@@ -448,25 +388,9 @@ p {
   background: transparent;
   border: none;
   color: #fff;
-  font-size: 0.85rem;
   outline: none;
 }
 
-.send-btn {
-  background: none;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  opacity: 0.7;
-  transition: 0.3s;
-}
-
-.send-btn:hover {
-  opacity: 1;
-  transform: scale(1.1);
-}
-
-/* --- ANIMAÇÕES --- */
 .chat-slide-enter-active,
 .chat-slide-leave-active {
   transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -478,34 +402,6 @@ p {
   transform: scale(0.9) translateY(20px);
 }
 
-@keyframes slideUpFade {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-in-text {
-  animation: slideUpFade 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
-.fade-in-text-delay {
-  opacity: 0;
-  animation: slideUpFade 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  animation-delay: 0.2s;
-}
-
-.fade-in-text-delay-btn {
-  opacity: 0;
-  animation: slideUpFade 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  animation-delay: 0.4s;
-}
-
 /* --- SCROLL INDICATOR --- */
 .scroll-indicator {
   position: absolute;
@@ -513,35 +409,5 @@ p {
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
-}
-
-.mouse {
-  width: 26px;
-  height: 42px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 20px;
-  display: flex;
-  justify-content: center;
-  padding-top: 8px;
-}
-
-.wheel {
-  width: 4px;
-  height: 8px;
-  background-color: #fff;
-  border-radius: 2px;
-  animation: scrollAnim 2s infinite cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-@keyframes scrollAnim {
-  0% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  100% {
-    transform: translateY(15px);
-    opacity: 0;
-  }
 }
 </style>

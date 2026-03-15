@@ -1,17 +1,15 @@
 <template>
-  <Hero/>
-  <Footer/>
+  <RouterView /> 
+  
 </template>
 
 <script>
 import Footer from './components/Footer.vue';
-import Hero from './components/sections/Hero.vue';
 
-export default{
-  name:'App',
-  components:{
-    Footer,
-    Hero
+export default {
+  name: 'App',
+  components: {
+    Footer
   }
 }
 </script>

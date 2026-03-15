@@ -6,58 +6,81 @@
     </div>
 
     <nav class="header-center">
-      <div class="menu-item">
-        <span class="links">Produtos <i class="chevron"></i></span>
-        <div class="mega-menu">
-          <div class="mega-content fade-in">
-            <div class="column">
-              <h3>Soluções</h3>
-              <p>Conheça nossas ferramentas de descarte.</p>
-            </div>
-            <div class="column">
-              <h3>Empresas</h3>
-              <p>Logística reversa para o seu negócio.</p>
-            </div>
-          </div>
+  <div class="menu-item">
+    <span class="links">Nossa Visão <i class="chevron"></i></span>
+    <div class="mega-menu">
+      <div class="mega-content fade-in">
+        <div class="column intro-col">
+          <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=300" alt="EcoWave Tech" class="menu-img">
+          <h3>O Movimento</h3>
+          <p>Liderado por <strong>João Gabriel</strong> e <strong>Juan Pablo</strong>, redefinindo o descarte global.</p>
+          <a href="#" class="more-link">Nossa história →</a>
+        </div>
+        
+        <div class="column">
+          <h3>Sobre a EcoWave</h3>
+          <ul class="menu-list">
+            <li><i class="dot"></i> Conheça nossas ferramentas</li>
+            <li><i class="dot"></i> Manifesto Sustentável</li>
+            <li><i class="dot"></i> Certificações Green</li>
+          </ul>
+        </div>
+        
+        <div class="column">
+          <h3>Empresas</h3>
+          <ul class="menu-list">
+            <li><i class="dot"></i> Logística Reversa</li>
+            <li><i class="dot"></i> Dashboards ESG</li>
+            <li><i class="dot"></i> Relatórios de Impacto</li>
+          </ul>
         </div>
       </div>
-      
-      <div class="menu-item">
-        <span class="links">Soluções <i class="chevron"></i></span>
-        <div class="mega-menu">
-          <div class="mega-content fade-in">
-            <div class="column">
-              <h3>Serviços</h3>
-              <p>Consultoria ambiental e relatórios.</p>
-            </div>
-            <div class="column">
-              <h3>Coleta</h3>
-              <p>Agende sua retirada em 24h.</p>
-            </div>
-          </div>
+    </div>
+  </div>
+
+  <div class="menu-item">
+    <span class="links">Soluções <i class="chevron"></i></span>
+    <div class="mega-menu">
+      <div class="mega-content fade-in">
+        <div class="column">
+          <img src="https://images.unsplash.com/photo-1532033375034-a29004bd9039?auto=format&fit=crop&w=300" alt="Coleta" class="menu-img">
+          <h3>Serviços</h3>
+          <p>Consultoria ambiental personalizada para sua planta industrial.</p>
+        </div>
+        <div class="column">
+          <h3>Coleta Inteligente</h3>
+          <ul class="menu-list">
+            <li>Agendamento 24h</li>
+            <li>Rastreamento via Blockchain</li>
+            <li>Pontos EcoWave IoT</li>
+          </ul>
         </div>
       </div>
-      
-      <div class="menu-item">
-        <span class="links">Recursos <i class="chevron"></i></span>
-        <div class="mega-menu">
-          <div class="mega-content fade-in">
-            <div class="column">
-              <h3>Blog</h3>
-              <p>Notícias sobre sustentabilidade.</p>
-            </div>
-            <div class="column">
-              <h3>Suporte</h3>
-              <p>Central de ajuda e contato.</p>
-            </div>
-          </div>
+    </div>
+  </div>
+
+  <div class="menu-item">
+    <span class="links">Recursos <i class="chevron"></i></span>
+    <div class="mega-menu">
+      <div class="mega-content fade-in">
+        <div class="column">
+          <h3>Blog & News</h3>
+          <p>As últimas tendências em sustentabilidade e economia circular.</p>
+        </div>
+        <div class="column">
+          <h3>Suporte</h3>
+          <p>Central de ajuda e canais de contato direto.</p>
         </div>
       </div>
-    </nav>
+    </div>
+  </div>
+</nav>
 
     <div class="header-right">
       <a href="#" class="btn-login">FAZER LOGIN</a>
-      <button class="btn-cta">COMECE AGORA</button>
+      <!-- <button class="btn-cta">COMECE AGORA</button> -->
+      <router-link to="/formulario" class="btn-cta">COMECE AGORA</router-link>
+      
     </div>
   </header>
 </template>
@@ -303,7 +326,7 @@ export default {
   font-size: 0.8rem;
   letter-spacing: 1px;
   text-transform: uppercase;
-
+  text-decoration: none;
   cursor: pointer;
   /* Transição de seda */
   transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
