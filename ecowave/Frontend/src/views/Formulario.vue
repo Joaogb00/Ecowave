@@ -145,32 +145,66 @@ export default {
       this.mouseY = e.clientY;
     },
     async handleSubmit(type) {
-      const isSignup = type === 'signup';
-      const userValue = isSignup ? this.formData.signupUser : this.formData.loginUser;
-      const passwordValue = isSignup ? this.formData.signupPassword : this.formData.loginPassword;
-      
-      if (!userValue || userValue.trim() === '' || !passwordValue) {
-        this.showModal = true;
-        return;
-      }
+  const isSignup = type === 'signup';
+  
+  // Define qual valor usar baseado no modo (login ou cadastro)
+  const userValue = isSignup ? this.formData.signupEmail : this.formData.loginUser;
+  const passwordValue = isSignup ? this.formData.signupPassword : this.formData.loginPassword;
 
-      try {
-        if (isSignup) {
-          await axios.post('http://127.0.0.1:3000/NovoUsuario', {
-            nome: this.formData.signupUser,
-            email: this.formData.signupEmail,
-            senha: this.formData.signupPassword
-          });
-          alert('Conta criada com sucesso!');
-          this.$router.push('/cadastrado');
-        } else {
-          console.log('Autenticando usuário:', this.formData.loginUser);
-        }
-      } catch (error) {
-        console.error('Erro na comunicação:', error);
-        alert('Falha na conexão com o terminal.');
+  if (!userValue || !passwordValue) {
+    this.showModal = true;
+    return;
+  }
+
+  try {
+    if (isSignup) {
+      // --- CADASTRO ---
+      await axios.post('http://127.0.0.1:3000/NovoUsuario', {
+        nome: this.formData.signupUser,
+        email: this.formData.signupEmail,
+        senha: this.formData.signupPassword
+      });
+      
+      sessionStorage.setItem('ecoWave_user', this.formData.signupUser);
+      sessionStorage.setItem('isLogged', 'true');
+      this.$router.push('/cadastrado');
+
+    } else {
+      // --- LOGIN ---
+      const response = await axios.post('http://127.0.0.1:3000/Login', {
+        email: this.formData.loginUser,
+        senha: this.formData.loginPassword
+      });
+
+      // Se chegou aqui com sucesso (status 200)
+      if (response.data && response.data.token) {
+        sessionStorage.setItem('ecoWave_user', response.data.nome);
+        sessionStorage.setItem('ecoWave_email', response.data.email);
+        sessionStorage.setItem('ecoWave_userId', response.data.id);
+        sessionStorage.setItem('ecoWave_token', response.data.token); // Salva o JWT que seu service gera
+        sessionStorage.setItem('isLogged', 'true');
+        
+        this.$router.push('/cadastrado');
       }
     }
+  } catch (error) {
+    // Aqui capturamos os erros lançados pelo seu Service (throw new Error)
+    const errorMessage = error.response?.data?.error || error.response?.data?.message || "";
+
+    if (errorMessage === "Usuario Não Existente") {
+      alert("Este e-mail não possui cadastro. Vamos criar sua conta!");
+      this.isSignUp = true; // Abre a aba de cadastro
+      this.formData.signupEmail = this.formData.loginUser; // Preenche o email automaticamente
+    } 
+    else if (errorMessage === "Senha Incorreta") {
+      alert("A senha digitada está incorreta. Tente novamente.");
+      this.formData.loginPassword = ""; // Limpa a senha errada
+    } 
+    else {
+      alert("Erro no acesso: " + (errorMessage || "Falha na conexão."));
+    }
+  }
+}
   }
 }
 </script>
@@ -202,8 +236,8 @@ export default {
 
 .auth-container {
   position: relative;
-  width: 1000px; /* Um pouco mais largo para respiro */
-  height: 550px;
+  width: 900px; /* Um pouco mais largo para respiro */
+  height: 500px;
   background: white;
   border: 1px solid rgba(0,0,0,0.08);
   display: flex;
@@ -398,6 +432,7 @@ input:focus + .input-line {
   text-transform: uppercase;
   border-bottom: 2px solid transparent;
   transition: border 0.3s;
+  width: 10vh;
 }
 
 .btn-cta:hover {
