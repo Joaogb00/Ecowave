@@ -9,27 +9,33 @@
           <div class="form-box" :class="{ 'show': isSignUp }">
             <span class="eyebrow">Registrar na ecowave</span>
             <h2 class="title-medium">Criar <span class="text-highlight">Perfil.</span></h2>
+            
             <form @submit.prevent="handleSubmit('signup')">
               <div class="input-group">
-                <label>NOME COMPLETO DO USUÁRIO</label>
+                <label>NOME COMPLETO</label>
                 <input type="text" v-model="formData.signupUser" placeholder="Nome do operador" />
                 <div class="input-line"></div>
               </div>
+
               <div class="input-group">
                 <label>EMAIL CONTATO</label>
                 <input type="email" v-model="formData.signupEmail" placeholder="exemplo@terminal.com" />
                 <div class="input-line"></div>
               </div>
+
               <div class="input-group">
                 <label>DEFINIR SENHA</label>
                 <input type="password" v-model="formData.signupPassword" placeholder="••••••••" />
                 <div class="input-line"></div>
                 
-                <div class="strength-container" v-if="formData.signupPassword">
-                  <div class="strength-bar" :style="{ width: passwordStrength + '%', backgroundColor: strengthColor }"></div>
-                  <span class="strength-text">{{ strengthLabel }}</span>
+                <div class="strength-wrapper" v-if="formData.signupPassword">
+                  <div class="strength-bar-bg">
+                    <div class="strength-bar-fill" :style="{ width: passwordStrength + '%', backgroundColor: strengthColor }"></div>
+                  </div>
+                  <span class="strength-text" :style="{ color: strengthColor }">{{ strengthLabel }}</span>
                 </div>
               </div>
+
               <button type="submit" class="action-button">CRIAR CONTA</button>
             </form>
           </div>
@@ -39,10 +45,11 @@
           <div class="form-box" :class="{ 'show': !isSignUp }">
             <span class="eyebrow">Entrar na EcoWave</span>
             <h2 class="title-medium">Login <span class="text-highlight">System.</span></h2>
+            
             <form @submit.prevent="handleSubmit('login')">
               <div class="input-group">
-                <label>EMAIL DO USUÁRIO</label>
-                <input type="email" v-model="formData.signupEmail" placeholder="exemplo@terminal.com" />
+                <label>USUÁRIO OU EMAIL</label>
+                <input type="text" v-model="formData.loginUser" placeholder="Seu identificador" />
                 <div class="input-line"></div>
               </div>
               <div class="input-group">
@@ -59,13 +66,13 @@
         <div class="overlay-slider">
           <div class="overlay-inner">
             <div class="overlay-content" v-if="!isSignUp">
-              <h2 class="title-medium">Já possui <br> acesso?</h2>
-              <p>Retorne ao terminal de comando central.</p>
-              <button @click="isSignUp = true" class="ghost-button">IR PARA CADASTRO</button>
-            </div>
-            <div class="overlay-content" v-else>
               <h2 class="title-medium">Novo por <br> aqui?</h2>
               <p>Inicie seu cadastro para acessar as métricas.</p>
+              <button @click="isSignUp = true" class="ghost-button">CRIAR CONTA</button>
+            </div>
+            <div class="overlay-content" v-else>
+              <h2 class="title-medium">Já possui <br> acesso?</h2>
+              <p>Retorne ao terminal de comando central.</p>
               <button @click="isSignUp = false" class="ghost-button">VOLTAR AO LOGIN</button>
             </div>
           </div>
@@ -74,12 +81,12 @@
       </div>
     </section>
 
-    <transition name="fade">
+    <transition name="modal-fade">
       <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
         <div class="modal-content">
           <div class="modal-icon">!</div>
           <h3>ACESSO NEGADO</h3>
-          <p>Preencha <strong>todos</strong> os campos para a validação do usuário</p>
+          <p>Preencha <strong>todos</strong> os campos para a validação do usuário.</p>
           <button @click="showModal = false" class="action-button">CORRIGIR</button>
         </div>
       </div>
@@ -127,9 +134,9 @@ export default {
     strengthLabel() {
       const s = this.passwordStrength;
       if (s === 0) return '';
-      if (s <= 30) return 'Fraca';
-      if (s <= 70) return 'Média';
-      return 'Segura';
+      if (s <= 30) return 'Senha Fraca';
+      if (s <= 70) return 'Senha Média';
+      return 'Senha Segura';
     }
   },
   methods: {
@@ -149,7 +156,7 @@ export default {
 
       try {
         if (isSignup) {
-          const response = await axios.post('http://127.0.0.1:3000/NovoUsuario', {
+          await axios.post('http://127.0.0.1:3000/NovoUsuario', {
             nome: this.formData.signupUser,
             email: this.formData.signupEmail,
             senha: this.formData.signupPassword
@@ -157,11 +164,11 @@ export default {
           alert('Conta criada com sucesso!');
           this.$router.push('/cadastrado');
         } else {
-          console.log('Tentando login com:', this.formData.loginUser);
+          console.log('Autenticando usuário:', this.formData.loginUser);
         }
       } catch (error) {
         console.error('Erro na comunicação:', error);
-        alert('Erro ao processar solicitação.');
+        alert('Falha na conexão com o terminal.');
       }
     }
   }
@@ -169,26 +176,41 @@ export default {
 </script>
 
 <style scoped>
-/* --- Alinhamento com a Hero --- */
+/* --- Keyframes para Animação de Entrada --- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .main-wrapper {
   background: #fdfdfd; 
-  color: #000000; 
-  font-family: 'Inter', sans-serif; /* Mesma fonte da Hero */
+  color: #000; 
+  font-family: 'Inter', sans-serif;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .auth-container {
   position: relative;
-  width: 1100px;
-  height: 650px;
+  width: 1000px; /* Um pouco mais largo para respiro */
+  height: 550px;
   background: white;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0,0,0,0.08);
   display: flex;
   overflow: hidden;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.08);
+  /* Aplicação do Fade In */
+  animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 .auth-panel {
@@ -197,26 +219,27 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 60px;
-  position: relative;
+  background: white;
 }
 
 .form-box {
   width: 100%;
-  max-width: 320px;
+  max-width: 340px;
   opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: scale(0.95);
+  transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
   pointer-events: none;
+  position: absolute; /* Evita que um interfira no layout do outro */
 }
 
 .form-box.show {
   opacity: 1;
-  transform: translateY(0);
+  transform: scale(1);
   pointer-events: all;
-  transition-delay: 0.3s;
+  position: relative;
 }
 
-/* --- Overlay Slider (Fundo Escuro da Hero) --- */
+/* --- Overlay Slider Estilo Apple/Eco --- */
 .overlay-slider {
   position: absolute;
   top: 0;
@@ -225,7 +248,7 @@ export default {
   height: 100%;
   background: #000;
   z-index: 100;
-  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -236,51 +259,48 @@ export default {
 }
 
 .overlay-content {
-  padding: 0 40px;
+  padding: 0 50px;
   text-align: center;
   color: white;
+  animation: fadeInUp 0.8s ease-out;
 }
 
-/* --- Tipografia Hero Style --- */
+/* --- Tipografia --- */
 .eyebrow {
   color: #888;
   font-size: 11px;
   letter-spacing: 2px;
   font-weight: 600;
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   text-transform: uppercase;
 }
 
 .title-medium {
-  font-size: 2.8rem;
+  font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 30px;
-  line-height: 0.95;
-  letter-spacing: -2px; /* Estilo do H1 da Hero */
+  line-height: 1;
+  letter-spacing: -1.5px;
 }
 
 .text-highlight {
-  opacity: 0.4; /* Efeito do span do H1 da Hero */
+  color: #999; /* Suavizado em vez de opacidade direta */
 }
 
-.overlay-slider .title-medium {
-  color: white;
-}
-
-/* --- Inputs Modernos --- */
+/* --- Inputs Minimalistas --- */
 .input-group {
   margin-bottom: 25px;
 }
 
 .input-group label {
   display: block;
-  font-size: 10px;
+  font-size: 9px;
   color: #999;
   margin-bottom: 8px;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
 }
 
 .input-group input {
@@ -288,87 +308,149 @@ export default {
   background: transparent;
   border: none;
   color: black;
-  padding: 12px 0;
+  padding: 10px 0;
   outline: none;
-  font-family: 'Inter', sans-serif;
-  font-size: 1rem;
+  font-size: 15px;
+  font-family: inherit;
 }
 
 .input-line {
   height: 1px;
-  background: rgba(0, 0, 0, 0.1);
-  transition: 0.4s;
+  background: #eeeeee;
+  transition: all 0.4s ease;
 }
 
 input:focus + .input-line {
   background: black;
+  height: 2px;
 }
 
-/* --- Botões (Mesma transição da Hero) --- */
+/* --- Barra de Senha --- */
+.strength-wrapper {
+  margin-top: 10px;
+}
+.strength-bar-bg {
+  height: 2px;
+  background: #eee;
+  width: 100%;
+  border-radius: 2px;
+}
+.strength-bar-fill {
+  height: 100%;
+  transition: all 0.5s ease;
+}
+.strength-text {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-top: 5px;
+  display: block;
+}
+
+/* --- Botões --- */
 .action-button {
   width: 100%;
   background: #000;
   color: #fff;
-  padding: 18px;
+  padding: 16px;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 12px;
   letter-spacing: 1px;
   border: 1px solid #000;
   cursor: pointer;
-  transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-  margin-top: 15px;
+  transition: all 0.4s ease;
+  margin-top: 20px;
 }
 
 .action-button:hover {
-  background: transparent;
-  color: #000;
-  transform: translateY(-3px);
+  background: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
 .ghost-button {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   color: white;
-  padding: 14px 28px;
+  padding: 12px 30px;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 11px;
+  letter-spacing: 1px;
   cursor: pointer;
-  margin-top: 25px;
-  transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  margin-top: 20px;
+  transition: all 0.3s ease;
 }
 
 .ghost-button:hover {
   background: white;
   color: black;
-  transform: translateY(-3px);
 }
 
 .btn-cta {
   position: absolute;
-  top: 30px;
-  left: 30px;
+  top: 40px;
+  left: 40px;
   text-decoration: none;
   color: #000;
   font-weight: 700;
   font-size: 11px;
   letter-spacing: 1px;
   text-transform: uppercase;
+  border-bottom: 2px solid transparent;
+  transition: border 0.3s;
+}
+
+.btn-cta:hover {
   border-bottom: 2px solid #000;
-  padding-bottom: 4px;
+}
+
+/* --- Modais --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  text-align: center;
+  max-width: 400px;
+  padding: 40px;
+}
+
+.modal-icon {
+  font-size: 40px;
+  font-weight: 200;
+  margin-bottom: 20px;
+}
+
+/* Transição do Modal */
+.modal-fade-enter-active, .modal-fade-leave-active {
+  transition: opacity 0.4s;
+}
+.modal-fade-enter-from, .modal-fade-leave-to {
+  opacity: 0;
 }
 
 /* --- Responsividade --- */
-@media (max-width: 800px) {
+@media (max-width: 900px) {
   .auth-container {
+    width: 95%;
     flex-direction: column;
     height: auto;
-    width: 90%;
-    box-shadow: none;
   }
   .overlay-slider { display: none; }
-  .form-box { opacity: 1; transform: none; display: none; pointer-events: auto; }
+  .form-box { 
+    opacity: 1; 
+    transform: none; 
+    position: relative; 
+    display: none; 
+  }
   .form-box.show { display: block; }
-  .auth-panel { padding: 40px 20px; }
-  .title-medium { font-size: 2rem; }
+  .auth-panel { padding: 60px 20px; }
 }
 </style>
