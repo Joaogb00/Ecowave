@@ -57,7 +57,9 @@
                 <input type="password" v-model="formData.loginPassword" placeholder="••••••••" />
                 <div class="input-line"></div>
               </div>
-              
+              <div class="forgot-password-link">
+                <a @click.prevent="handleForgotPassword" href="#">Esqueci minha senha</a>
+              </div>
               <button type="submit" class="action-button">ENTRAR</button>
             </form>
           </div>
@@ -85,9 +87,9 @@
       <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
         <div class="modal-content">
           <div class="modal-icon">!</div>
-          <h3>ACESSO NEGADO</h3>
-          <p>Preencha <strong>todos</strong> os campos para a validação do usuário.</p>
-          <button @click="showModal = false" class="action-button">CORRIGIR</button>
+          <h3>{{ modalTitle }}</h3>
+          <p v-html="modalMessage"></p>
+          <button @click="showModal = false" class="action-button">FECHAR</button>
         </div>
       </div>
     </transition>
@@ -103,6 +105,8 @@ export default {
     return {
       isSignUp: false,
       showModal: false,
+      modalTitle: '',
+      modalMessage: '',
       mouseX: 0,
       mouseY: 0,
       formData: {
@@ -140,71 +144,83 @@ export default {
     }
   },
   methods: {
+    triggerModal(title, message) {
+      this.modalTitle = title;
+      this.modalMessage = message;
+      this.showModal = true;
+    },
     updateMousePosition(e) {
       this.mouseX = e.clientX;
       this.mouseY = e.clientY;
     },
     async handleSubmit(type) {
-  const isSignup = type === 'signup';
-  
-  // Define qual valor usar baseado no modo (login ou cadastro)
-  const userValue = isSignup ? this.formData.signupEmail : this.formData.loginUser;
-  const passwordValue = isSignup ? this.formData.signupPassword : this.formData.loginPassword;
+      const isSignup = type === 'signup';
+      const userValue = isSignup ? this.formData.signupEmail : this.formData.loginUser;
+      const passwordValue = isSignup ? this.formData.signupPassword : this.formData.loginPassword;
 
-  if (!userValue || !passwordValue) {
-    this.showModal = true;
-    return;
-  }
+      if (!userValue || !passwordValue) {
+        this.triggerModal("ACESSO NEGADO", "Preencha <strong>todos</strong> os campos para a validação do usuário.");
+        return;
+      }
 
-  try {
-    if (isSignup) {
-      // --- CADASTRO ---
-      await axios.post('http://127.0.0.1:3000/NovoUsuario', {
-        nome: this.formData.signupUser,
-        email: this.formData.signupEmail,
-        senha: this.formData.signupPassword
-      });
-      
-      sessionStorage.setItem('ecoWave_user', this.formData.signupUser);
-      sessionStorage.setItem('isLogged', 'true');
-      this.$router.push('/cadastrado');
+      try {
+        if (isSignup) {
+          await axios.post('http://127.0.0.1:3000/NovoUsuario', {
+            nome: this.formData.signupUser,
+            email: this.formData.signupEmail,
+            senha: this.formData.signupPassword
+          });
+          
+          sessionStorage.setItem('ecoWave_user', this.formData.signupUser);
+          sessionStorage.setItem('isLogged', 'true');
+          this.$router.push('/cadastrado');
 
-    } else {
-      // --- LOGIN ---
-      const response = await axios.post('http://127.0.0.1:3000/Login', {
-        email: this.formData.loginUser,
-        senha: this.formData.loginPassword
-      });
+        } else {
+          const response = await axios.post('http://127.0.0.1:3000/Login', {
+            email: this.formData.loginUser,
+            senha: this.formData.loginPassword
+          });
 
-      // Se chegou aqui com sucesso (status 200)
-      if (response.data && response.data.token) {
-        sessionStorage.setItem('ecoWave_user', response.data.nome);
-        sessionStorage.setItem('ecoWave_email', response.data.email);
-        sessionStorage.setItem('ecoWave_userId', response.data.id);
-        sessionStorage.setItem('ecoWave_token', response.data.token); // Salva o JWT que seu service gera
-        sessionStorage.setItem('isLogged', 'true');
-        
-        this.$router.push('/cadastrado');
+          if (response.data && response.data.token) {
+            sessionStorage.setItem('ecoWave_user', response.data.nome);
+            sessionStorage.setItem('ecoWave_email', response.data.email);
+            sessionStorage.setItem('ecoWave_userId', response.data.id);
+            sessionStorage.setItem('ecoWave_token', response.data.token);
+            sessionStorage.setItem('isLogged', 'true');
+            this.$router.push('/cadastrado');
+          }
+        }
+      } catch (error) {
+        const errorMessage = error.response?.data?.error || error.response?.data?.message || "";
+
+        if (errorMessage === "Usuario Não Existente") {
+          this.triggerModal("CADASTRO PENDENTE", "Este e-mail não possui cadastro. Vamos criar sua conta!");
+          this.isSignUp = true;
+          this.formData.signupEmail = this.formData.loginUser;
+        } 
+        else if (errorMessage === "Senha Incorreta") {
+          this.triggerModal("SENHA INVÁLIDA", "A senha digitada está incorreta. Tente novamente.");
+          this.formData.loginPassword = "";
+        } 
+        else {
+          this.triggerModal("ERRO DE CONEXÃO", "Erro no acesso: " + (errorMessage || "Falha na conexão."));
+        }
+      }
+    },
+    async handleForgotPassword() {
+      if (!this.formData.loginUser) {
+        this.triggerModal("AVISO", "Digite seu e-mail no campo 'usuario e email' primeiro!");
+        return;
+      }
+      try {
+        await axios.post('http://127.0.0.1:3000/EsqueciSenha', {
+          email: this.formData.loginUser
+        });
+        this.triggerModal("SUCESSO", "Código de recuperação enviado para o seu e-mail/SMS!");
+      } catch (error) {
+        this.triggerModal("ERRO", "Erro ao solicitar recuperação.");
       }
     }
-  } catch (error) {
-    // Aqui capturamos os erros lançados pelo seu Service (throw new Error)
-    const errorMessage = error.response?.data?.error || error.response?.data?.message || "";
-
-    if (errorMessage === "Usuario Não Existente") {
-      alert("Este e-mail não possui cadastro. Vamos criar sua conta!");
-      this.isSignUp = true; // Abre a aba de cadastro
-      this.formData.signupEmail = this.formData.loginUser; // Preenche o email automaticamente
-    } 
-    else if (errorMessage === "Senha Incorreta") {
-      alert("A senha digitada está incorreta. Tente novamente.");
-      this.formData.loginPassword = ""; // Limpa a senha errada
-    } 
-    else {
-      alert("Erro no acesso: " + (errorMessage || "Falha na conexão."));
-    }
-  }
-}
   }
 }
 </script>
@@ -212,14 +228,8 @@ export default {
 <style scoped>
 /* --- Keyframes para Animação de Entrada --- */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .main-wrapper {
@@ -236,14 +246,13 @@ export default {
 
 .auth-container {
   position: relative;
-  width: 900px; /* Um pouco mais largo para respiro */
+  width: 900px;
   height: 500px;
   background: white;
   border: 1px solid rgba(0,0,0,0.08);
   display: flex;
   overflow: hidden;
   box-shadow: 0 40px 80px rgba(0,0,0,0.08);
-  /* Aplicação do Fade In */
   animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
@@ -263,7 +272,7 @@ export default {
   transform: scale(0.95);
   transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
   pointer-events: none;
-  position: absolute; /* Evita que um interfira no layout do outro */
+  position: absolute;
 }
 
 .form-box.show {
@@ -273,13 +282,9 @@ export default {
   position: relative;
 }
 
-/* --- Overlay Slider Estilo Apple/Eco --- */
 .overlay-slider {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 50%;
-  height: 100%;
+  top: 0; left: 0; width: 50%; height: 100%;
   background: #000;
   z-index: 100;
   transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
@@ -299,7 +304,6 @@ export default {
   animation: fadeInUp 0.8s ease-out;
 }
 
-/* --- Tipografia --- */
 .eyebrow {
   color: #888;
   font-size: 11px;
@@ -318,14 +322,9 @@ export default {
   letter-spacing: -1.5px;
 }
 
-.text-highlight {
-  color: #999; /* Suavizado em vez de opacidade direta */
-}
+.text-highlight { color: #999; }
 
-/* --- Inputs Minimalistas --- */
-.input-group {
-  margin-bottom: 25px;
-}
+.input-group { margin-bottom: 25px; }
 
 .input-group label {
   display: block;
@@ -359,29 +358,11 @@ input:focus + .input-line {
   height: 2px;
 }
 
-/* --- Barra de Senha --- */
-.strength-wrapper {
-  margin-top: 10px;
-}
-.strength-bar-bg {
-  height: 2px;
-  background: #eee;
-  width: 100%;
-  border-radius: 2px;
-}
-.strength-bar-fill {
-  height: 100%;
-  transition: all 0.5s ease;
-}
-.strength-text {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  margin-top: 5px;
-  display: block;
-}
+.strength-wrapper { margin-top: 10px; }
+.strength-bar-bg { height: 2px; background: #eee; width: 100%; border-radius: 2px; }
+.strength-bar-fill { height: 100%; transition: all 0.5s ease; }
+.strength-text { font-size: 10px; font-weight: 700; text-transform: uppercase; margin-top: 5px; display: block; }
 
-/* --- Botões --- */
 .action-button {
   width: 100%;
   background: #000;
@@ -415,15 +396,11 @@ input:focus + .input-line {
   transition: all 0.3s ease;
 }
 
-.ghost-button:hover {
-  background: white;
-  color: black;
-}
+.ghost-button:hover { background: white; color: black; }
 
 .btn-cta {
   position: absolute;
-  top: 40px;
-  left: 40px;
+  top: 40px; left: 40px;
   text-decoration: none;
   color: #000;
   font-weight: 700;
@@ -435,9 +412,7 @@ input:focus + .input-line {
   width: 10vh;
 }
 
-.btn-cta:hover {
-  border-bottom: 2px solid #000;
-}
+.btn-cta:hover { border-bottom: 2px solid #000; }
 
 /* --- Modais --- */
 .modal-overlay {
@@ -455,6 +430,9 @@ input:focus + .input-line {
   text-align: center;
   max-width: 400px;
   padding: 40px;
+  background: white;
+  border: 1px solid #eee;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.1);
 }
 
 .modal-icon {
@@ -463,29 +441,32 @@ input:focus + .input-line {
   margin-bottom: 20px;
 }
 
-/* Transição do Modal */
-.modal-fade-enter-active, .modal-fade-leave-active {
-  transition: opacity 0.4s;
-}
-.modal-fade-enter-from, .modal-fade-leave-to {
-  opacity: 0;
-}
+.modal-fade-enter-active, .modal-fade-leave-active { transition: opacity 0.4s; }
+.modal-fade-enter-from, .modal-fade-leave-to { opacity: 0; }
 
-/* --- Responsividade --- */
 @media (max-width: 900px) {
-  .auth-container {
-    width: 95%;
-    flex-direction: column;
-    height: auto;
-  }
+  .auth-container { width: 95%; flex-direction: column; height: auto; }
   .overlay-slider { display: none; }
-  .form-box { 
-    opacity: 1; 
-    transform: none; 
-    position: relative; 
-    display: none; 
-  }
+  .form-box { opacity: 1; transform: none; position: relative; display: none; }
   .form-box.show { display: block; }
   .auth-panel { padding: 60px 20px; }
 }
+
+.forgot-password-link {
+  text-align: right;
+  margin-top: -15px;
+  margin-bottom: 20px;
+}
+
+.forgot-password-link a {
+  font-size: 10px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: color 0.3s;
+  cursor: pointer;
+}
+
+.forgot-password-link a:hover { color: #000; }
 </style>

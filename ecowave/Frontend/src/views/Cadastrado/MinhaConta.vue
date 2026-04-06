@@ -68,37 +68,37 @@ export default {
     };
   },
   methods: {
- async handleUpdate() {
-  // Verifica se o ID existe no formulário antes de enviar
+async handleUpdate() {
   if (!this.userForm.id) {
-    alert("Erro: Sessão expirada ou ID não encontrado. Faça login novamente.");
+    alert("Erro: Sessão expirada.");
     return;
   }
 
   this.loading = true;
 
   try {
-    // A URL deve conter o ID no final: http://localhost:3000/EditarUsuario/123
     const url = `http://localhost:3000/EditarUsuario/${this.userForm.id}`;
     
     const response = await axios.put(url, {
       nome: this.userForm.nome,
       email: this.userForm.email,
-      senha: this.userForm.senha || undefined // Envia a senha apenas se preenchida
+      senha: this.userForm.senha || undefined 
     });
 
-    if (response.data) {
-      // Atualiza o nome e email na sessão para refletir no Header
-      sessionStorage.setItem('ecoWave_user', this.userForm.nome);
-      sessionStorage.setItem('ecoWave_email', this.userForm.email);
+    // AQUI ESTÁ O PONTO CHAVE:
+    // O seu Service retorna { message: "...", usuario: { id, nome, email } }
+    if (response.data && response.data.usuario) {
+      const userUpdated = response.data.usuario;
+
+      // Atualiza o sessionStorage com os dados REAIS que voltaram do banco
+      sessionStorage.setItem('ecoWave_user', userUpdated.nome);
+      sessionStorage.setItem('ecoWave_email', userUpdated.email);
       
       alert("Perfil atualizado com sucesso!");
-      this.userForm.senha = ""; // Limpa o campo de senha
+      this.userForm.senha = ""; 
     }
   } catch (error) {
-    console.error("Erro na requisição:", error);
-    const msg = error.response?.data?.error || "Erro ao conectar com o servidor.";
-    alert(msg);
+    // ... erro
   } finally {
     this.loading = false;
   }

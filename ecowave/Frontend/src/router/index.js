@@ -3,6 +3,7 @@ import Formulario from '@/views/Formulario.vue'
 import Hero from '@/components/sections/Hero.vue'
 import Pag_cadastrado from '@/views/Cadastrado/Pag_cadastrado.vue'
 import MinhaConta from '../views/Cadastrado/MinhaConta.vue'
+import Loja from '@/views/Cadastrado/Loja.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -25,6 +26,11 @@ const router = createRouter({
        path: '/minhaconta',
        name: 'minhaconta',
        component: MinhaConta,
+     },
+     {
+       path: '/Loja',
+       name: 'loja',
+       component: Loja,
      },
     
   ],
