@@ -4,6 +4,7 @@ import Hero from '@/components/sections/Hero.vue'
 import Pag_cadastrado from '@/views/Cadastrado/Pag_cadastrado.vue'
 import MinhaConta from '../views/Cadastrado/MinhaConta.vue'
 import Loja from '@/views/Cadastrado/Loja.vue'
+import Adm from '@/views/Admnistrador/Adm.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -31,6 +32,11 @@ const router = createRouter({
        path: '/Loja',
        name: 'loja',
        component: Loja,
+     },
+     {
+       path: '/administrador',
+       name: 'adm',
+       component: Adm,
      },
     
   ],

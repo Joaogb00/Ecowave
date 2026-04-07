@@ -187,7 +187,13 @@ export default {
             sessionStorage.setItem('ecoWave_userId', response.data.id);
             sessionStorage.setItem('ecoWave_token', response.data.token);
             sessionStorage.setItem('isLogged', 'true');
-            this.$router.push('/cadastrado');
+
+            // --- LÓGICA DE ADMINISTRADOR APLICADA AQUI ---
+            if (this.formData.loginUser === 'admin@ecowave.com' && this.formData.loginPassword === 'admin123') {
+              this.$router.push('/administrador');
+            } else {
+              this.$router.push('/cadastrado');
+            }
           }
         }
       } catch (error) {

@@ -9,16 +9,21 @@
     </header>
 
     <div class="container-elements">
-      <div class="card-produto" v-for="i in 3" :key="i">
+      <p v-if="recompensas.length === 0">Nenhum produto disponível no momento.</p>
+
+      <div class="card-produto" v-for="item in recompensas" :key="item.id">
         <div class="card-image">
           <i class="bi bi-box-seam"></i>
         </div>
         <div class="card-info">
-          <h3>PRODUTO {{ i }}</h3>
-          <p>Edição limitada com acabamento em preto fosco.</p>
+          <h3>{{ item.nome }}</h3>
+          <p>{{ item.descricao }}</p>
+          <small>Parceiro: {{ item.empresaParceira }}</small>
           <div class="card-footer">
-            <span class="price">50.00</span>
-            <button class="btn-buy">ADQUIRIR</button>
+            <i class="bi bi-coin"></i><span class="price">{{ item.pontosNecessarios }}</span>
+            <button class="btn-buy" :disabled="item.estoque <= 0">
+              {{ item.estoque > 0 ? 'ADQUIRIR' : 'ESGOTADO' }}
+            </button>
           </div>
         </div>
       </div>
@@ -26,15 +31,54 @@
   </section>
 </template>
 
+<script>
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      recompensas: []
+    }
+  },
+  mounted() {
+    this.fetchRecompensas();
+  },
+  methods: {
+    async fetchRecompensas() {
+      try {
+  const response = await axios.get('http://localhost:3000/Recompensas');
+  // Como seu GetRecompensaService retorna { message, recompensas: [...] }
+  this.recompensas = response.data.recompensas; 
+} catch (error) {
+  console.error("Erro ao buscar recompensas:", error);
+}
+    }
+  }
+}
+</script>
+
 <style scoped>
-/* Base Noir */
+small {
+  display: block;
+  font-size: 0.7rem;
+  color: #555;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+/* Adicione isso ao seu estilo original da loja */
+.img-product {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ajusta a foto para preencher o espaço sem distorcer */
+}
+
+/* Restante do seu CSS Noir se mantém igual... */
 .section-loja {
   min-height: 100vh;
-  background-color: #000000; /* Preto puro */
-  color: #ffffff; /* Branco puro */
+  background-color: #000000;
+  color: #ffffff;
   padding: 40px 5%;
   font-family: 'Inter', sans-serif;
-  letter-spacing: 1px;
 }
 
 /* Header com Linha Minimalista */
@@ -127,9 +171,9 @@
 }
 
 .price::before {
-  content: "$";
+  
   font-size: 0.8rem;
-  margin-right: 4px;
+ 
 }
 
 .btn-buy {
