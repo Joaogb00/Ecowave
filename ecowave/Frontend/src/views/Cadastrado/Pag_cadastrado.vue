@@ -7,10 +7,13 @@
       <h1 class="welcome-title">
         Bem-vindo, <span class="text-highlight">{{ userName }}</span>.
       </h1>
-      <p class="welcome-subtitle">Seu perfil na EcoWave foi ativado com sucesso no terminal central.</p>
+      <p class="welcome-subtitle">
+        Seu perfil na <strong>EcoWave</strong> foi ativado com sucesso no terminal central.
+      </p>
       
       <div class="status-badge">
-        <span class="dot"></span> Online
+        <span class="dot"></span> 
+        <span class="status-text">Sistema Online</span>
       </div>
     </div>
 
@@ -36,82 +39,113 @@ export default {
   mounted() {
     // Verificação de segurança simples: se não houver usuário na sessão, volta para o login
     if (!sessionStorage.getItem('ecoWave_user')) {
-      this.$router.push('/login'); // ou o nome da sua rota de formulário
+      this.$router.push('/login'); 
     }
   }
 }
 </script>
 
 <style scoped>
-/* Mantendo seus estilos originais e adicionando o design da mensagem */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
 .hero-cadastrado {
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: 100vh; /* Ajustado de 150vh para 100vh para melhor usabilidade */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: white;
+  background-color: #ffffff;
   overflow: hidden;
   font-family: 'Inter', sans-serif;
 }
 
 .welcome-container {
   position: relative;
-  z-index: 10; /* Acima do overlay se necessário, ou ajuste conforme seu design */
+  z-index: 10;
   text-align: center;
-  animation: fadeInUp 1s ease-out;
-  color: #000; /* Ajuste para branco se o fundo for escuro */
-}
-
-.welcome-title {
-  font-size: 3.5rem;
-  font-weight: 800;
-  letter-spacing: -2px;
-  margin: 10px 0;
-}
-
-.text-highlight {
-  color: #000;
-  opacity: 0.4;
-}
-
-.welcome-subtitle {
-  font-size: 1.1rem;
-  color: #666;
-  max-width: 500px;
-  margin: 0 auto 20px;
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #1a1a1a;
+  padding: 0 20px;
 }
 
 .eyebrow {
-  font-size: 12px;
+  display: block;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 3px;
+  letter-spacing: 4px;
   font-weight: 700;
-  color: #888;
+  color: #999;
+  margin-bottom: 1rem;
+}
+
+.welcome-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin: 0 0 1.5rem 0;
+}
+
+.text-highlight {
+  background: linear-gradient(120deg, #1a1a1a 0%, #666 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.welcome-subtitle {
+  font-size: 1.125rem;
+  color: #555;
+  max-width: 540px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.6;
 }
 
 /* Badge de Status */
 .status-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: 10px;
+  padding: 10px 20px;
+  background: #f8f9fa;
+  border: 1px solid #eaeaea;
+  border-radius: 100px;
+  transition: all 0.3s ease;
+}
+
+.status-badge:hover {
   background: #f0f0f0;
-  border-radius: 50px;
-  font-size: 12px;
+  transform: translateY(-2px);
+}
+
+.status-text {
+  font-size: 0.75rem;
   font-weight: 600;
+  color: #444;
   text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .dot {
   width: 8px;
   height: 8px;
-  background-color: #00ff88;
+  background-color: #00d97e;
   border-radius: 50%;
-  box-shadow: 0 0 10px #00ff88;
+  position: relative;
+}
+
+.dot::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #00d97e;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
 }
 
 .overlay {
@@ -120,15 +154,15 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  /* Ajuste a opacidade conforme desejar para ler o texto */
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.9));
+  background: radial-gradient(circle at center, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 100%);
   z-index: 1;
+  pointer-events: none;
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -136,9 +170,25 @@ export default {
   }
 }
 
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
 @media (max-width: 768px) {
   .welcome-title {
     font-size: 2.5rem;
+    letter-spacing: -1px;
+  }
+  
+  .welcome-subtitle {
+    font-size: 1rem;
   }
 }
 </style>

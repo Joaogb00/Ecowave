@@ -5,23 +5,25 @@
     <div class="video-container">
       <video autoplay muted loop playsinline class="video-bg">
         <source src="../../assets/videos/Video-Fundo.mp4" type="video/mp4">
-        Seu navegador não suporta vídeos fortes.
+        Seu navegador não suporta vídeos.
       </video>
-      <div class="overlay"></div>
+      <div class="overlay" :style="{ opacity: 0.5 + (scrollPercent * 0.5) }"></div>
     </div>
 
     <div class="hero-content">
       <div class="text-wrapper reveal">
-        <h1 class="fade-in-text">EcoWave: O futuro <br><span>do descarte.</span></h1>
+        <h1 class="fade-in-text">EcoWave: O ponto <br><span class="highlight">de partida.</span></h1>
         <p class="fade-in-text-delay">
-          Logística reversa inteligente e soluções sustentáveis para marcas que
-          desejam liderar a mudança global.
+          Onde a maioria enxerga o fim, nós vemos renovação. 
+          Interrompa a linha reta do desperdício e desenhe o <strong>círculo da vida</strong> conosco.
         </p>
       </div>
 
       <div class="hero-actions fade-in-text-delay-btn reveal">
-        <button class="btn-primary">COMEÇAR AGORA</button>
-        
+        <button class="btn-primary">
+          TRANSFORME AGORA
+          <div class="sheen"></div>
+        </button>
       </div>
     </div>
 
@@ -29,6 +31,7 @@
       <div class="mouse">
         <div class="wheel"></div>
       </div>
+      <span class="scroll-text">O futuro está em movimento</span>
     </div>
 
     <div class="floating-actions">
@@ -39,8 +42,7 @@
       </button>
 
       <button class="chat-trigger" @click="isChatOpen = !isChatOpen" :class="{ 'active': isChatOpen }">
-        <svg v-if="!isChatOpen" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
-          stroke-width="2">
+        <svg v-if="!isChatOpen" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
         <svg v-else viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -52,18 +54,17 @@
         <div v-if="isChatOpen" class="chat-card">
           <div class="chat-header">
             <div class="status-dot"></div>
-            <span>EcoAI • Online</span>
+            <span>EcoAI • O Despertar da Matéria</span>
           </div>
 
           <div class="chat-messages" ref="chatBox">
-            <div v-for="(msg, index) in messages" :key="index" :class="['msg', msg.type]">
-              {{ msg.text }}
+            <div v-for="(msg, index) in messages" :key="index" :class="['msg', msg.type]" v-html="msg.text">
             </div>
             <div v-if="isTyping" class="msg bot typing">...</div>
           </div>
 
           <div class="chat-input">
-            <input v-model="userQuery" @keyup.enter="sendMessage" placeholder="Pergunte aqui..." />
+            <input v-model="userQuery" @keyup.enter="sendMessage" placeholder="Toque. Arraste. Transforme..." />
             <button @click="sendMessage" class="send-btn">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
@@ -74,10 +75,8 @@
       </transition>
     </div>
   </section>
-  <!-- Section secundaria  -->
-  <Secundaria/>
 
-  <!-- Parte da section branca -->
+  <Secundaria/>
   <Main1/>
 </template>
 
@@ -85,29 +84,32 @@
 import Header from '../Header.vue';
 import Main1 from './Main1.vue';
 import Secundaria from './Secundaria.vue';
+
 export default {
   name: 'HeroPrincipal',
-  components: { 
-    Header,
-    Main1,
-    Secundaria
-
-   },
+  components: { Header, Main1, Secundaria },
   data() {
     return {
       isChatOpen: false,
       isScrolled: false,
+      scrollPercent: 0,
       userQuery: '',
       isTyping: false,
       messages: [
-        { type: 'bot', text: 'Olá! Bem-vindo à EcoWave. Como posso ajudar seu negócio hoje?' },
-        { type: 'menu', text: 'Digite o número ou clique na opção:\n1: Como funciona o descarte\n2: Soluções para Empresas\n3: Tecnologia Utilizada 4: Falar com Consultor' }
+        { 
+          type: 'bot', 
+          text: '<strong>Bem-vindo ao fluxo.</strong> No ecossistema da sustentabilidade, o descarte é um convite à renovação. Como podemos transformar o seu rastro no mundo hoje?' 
+        },
+        { 
+          type: 'menu', 
+          text: 'Escolha uma via de fluxo:<br>1: Ciclo do Vidro/Polímeros<br>2: Soluções ESG<br>3: Tecnologia Circular<br>4: Consultoria' 
+        }
       ],
       opcoes: {
-        '1': "Nossos pontos de coleta inteligentes rastreiam resíduos via IoT, garantindo que 100% do material seja reciclado corretamente.",
-        '2': "Oferecemos logística reversa personalizada e dashboards de impacto ESG para marcas que buscam sustentabilidade real.",
-        '3': "Unimos Blockchain para rastreabilidade e Inteligência Artificial para otimização de rotas de coleta.",
-        '4': "Perfeito! Deixe seu e-mail ou WhatsApp aqui no chat que um de nossos especialistas entrará em contato em breve."
+        '1': "Fragmentos de vidro e polímeros carregam energia. Nossa logística garante que sua próxima forma seja útil e limpa.",
+        '2': "Desenhamos o círculo da vida para sua marca, transformando passivo ambiental em ativo reputacional.",
+        '3': "Blockchain e IA: o movimento do dado garantindo a transparência do descarte.",
+        '4': "O futuro responde ao seu contato. Deixe seus dados e um agente de fluxo falará com você."
       }
     }
   },
@@ -120,23 +122,22 @@ export default {
   },
   methods: {
     handleScroll() {
-      this.isScrolled = window.scrollY > 400;
+      const scrollY = window.scrollY;
+      this.isScrolled = scrollY > 400;
+      // Calcula percentual de scroll para efeitos visuais (0 a 1)
+      this.scrollPercent = Math.min(scrollY / window.innerHeight, 1);
     },
     scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     },
     initScrollReveal() {
-      const observerOptions = {
-        threshold: 0.15
-      };
-
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             entry.target.classList.add('active-reveal');
           }
         });
-      }, observerOptions);
+      }, { threshold: 0.15 });
 
       document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     },
@@ -152,11 +153,8 @@ export default {
       this.scrollToBottom();
       setTimeout(() => {
         this.isTyping = false;
-        if (this.opcoes[escolha]) {
-          this.messages.push({ type: 'bot', text: this.opcoes[escolha] });
-        } else {
-          this.messages.push({ type: 'bot', text: "Desculpe, não entendi. Escolha um número de 1 a 4." });
-        }
+        const resposta = this.opcoes[escolha] || "O futuro exige clareza. Por favor, escolha uma opção de 1 a 4.";
+        this.messages.push({ type: 'bot', text: resposta });
         this.scrollToBottom();
       }, 800);
     },
@@ -171,12 +169,11 @@ export default {
 </script>
 
 <style scoped>
-/* --- LÓGICA DE REVELAÇÃO (O QUE VOCÊ PEDIU) --- */
+/* --- EFEITOS DE REVELAÇÃO --- */
 .reveal {
   opacity: 0;
-  transform: translateY(50px);
-  transition: all 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-  will-change: transform, opacity;
+  transform: translateY(30px);
+  transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .active-reveal {
@@ -184,7 +181,7 @@ export default {
   transform: translateY(0) !important;
 }
 
-/* --- ESTILOS GERAIS --- */
+/* --- HERO PRINCIPAL --- */
 .hero-principal {
   position: relative;
   width: 100%;
@@ -192,16 +189,13 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #000;
+  background-color: #050505;
   overflow: hidden;
 }
 
 .video-container {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   z-index: 1;
 }
 
@@ -209,15 +203,14 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: saturate(0.8) brightness(0.8);
 }
 
 .overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.493), rgba(0, 0, 0, 0.801));/*ideal */
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%);
+  transition: opacity 0.3s ease;
   z-index: 2;
 }
 
@@ -226,204 +219,155 @@ export default {
   z-index: 10;
   text-align: center;
   color: #fff;
-  font-family: 'Inter', sans-serif;
-  max-width: 1000px;
+  max-width: 900px;
   padding: 0 20px;
 }
 
 h1 {
-  font-size: clamp(2.5rem, 8vw, 5rem);
-  font-weight: 700;
-  letter-spacing: -3px;
-  margin-bottom: 25px;
-  line-height: 1;
-  color: #fff;
+  font-size: clamp(2.5rem, 8vw, 5.5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  margin-bottom: 30px;
 }
 
-h1 span {
-  opacity: 0.5;
+.highlight {
+  background: linear-gradient(90deg, #fff, #00ff88, #fff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 5s linear infinite;
+}
+
+@keyframes shine {
+  to { background-position: 200% center; }
 }
 
 p {
-  font-size: clamp(1rem, 2vw, 1.2rem);
-  max-width: 600px;
-  margin: 0 auto 45px;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  max-width: 650px;
+  margin: 0 auto 40px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 300;
 }
 
-.hero-actions {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-}
-
-.btn-primary,
-.btn-secondary {
-  padding: 18px 36px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
+/* --- BOTÕES COM EFEITO GLASS --- */
 .btn-primary {
+  position: relative;
+  overflow: hidden;
+  padding: 20px 45px;
   background: #fff;
   color: #000;
-  border: 1px solid #fff;
-}
-
-.btn-secondary {
-  background: transparent;
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: none;
+  font-weight: 700;
+  letter-spacing: 2px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
 }
 
 .btn-primary:hover {
-  background: transparent;
-  color: #fff;
-  transform: translateY(-5px);
+  transform: scale(1.05);
 }
 
-/* --- FLOATING ACTIONS --- */
+.sheen {
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+  transition: 0.5s;
+  transform: skewX(-25deg);
+}
+
+.btn-primary:hover .sheen {
+  left: 150%;
+}
+
+/* --- CHAT E COMPONENTES FLUTUANTES --- */
 .floating-actions {
   position: fixed;
-  right: 40px;
-  bottom: 40px;
-  z-index: 999;
+  right: 30px;
+  bottom: 30px;
+  z-index: 100;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
   gap: 15px;
 }
 
-.chat-trigger,
-.back-to-top {
-  width: 55px;
-  height: 55px;
+.chat-trigger, .back-to-top {
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
-  transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: grid;
+  place-items: center;
+  transition: all 0.4s ease;
 }
 
-.back-to-top {
-  opacity: 0;
-  transform: scale(0.5);
-  pointer-events: none;
+.chat-trigger:hover {
+  background: #00ff88;
+  color: #000;
 }
 
-.back-to-top.show-top {
-  opacity: 1;
-  transform: scale(1);
-  pointer-events: auto;
-}
-
-/* --- CHAT CARD --- */
 .chat-card {
   position: absolute;
-  bottom: 70px;
+  bottom: 80px;
   right: 0;
-  width: 320px;
-  background: rgba(18, 18, 18, 0.95);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  overflow: hidden;
-  transform-origin: bottom right;
+  width: 350px;
+  background: rgba(10, 10, 10, 0.9);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
 
-.chat-header {
-  padding: 18px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #fff;
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  background: #00ff88;
-  border-radius: 50%;
-}
-
-.chat-messages {
-  height: 350px;
-  overflow-y: auto;
-  padding: 20px;
+.scroll-indicator {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-}
-
-.msg {
-  max-width: 90%;
-  padding: 12px 16px;
-  border-radius: 18px;
-  font-size: 0.85rem;
-  color: white;
-  display: flex;
-  
-}
-
-.msg.bot {
-  background: rgba(255, 255, 255, 0.08);
-  align-self: flex-start;
-  color: #eee;
-}
-
-.msg.user {
-  background: #fff;
-  color: #000;
-  align-self: flex-end;
-  font-weight: 500;
-}
-
-.chat-input {
-  padding: 15px;
-  display: flex;
+  align-items: center;
   gap: 10px;
-  background: rgba(0, 0, 0, 0.3);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.chat-input input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: #fff;
-  outline: none;
+.scroll-text {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  opacity: 0.5;
 }
 
-.chat-slide-enter-active,
-.chat-slide-leave-active {
-  transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+.mouse {
+  width: 25px;
+  height: 40px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 20px;
+  position: relative;
 }
 
-.chat-slide-enter-from,
-.chat-slide-leave-to {
-  opacity: 0;
-  transform: scale(0.9) translateY(20px);
-}
-
-/* --- SCROLL INDICATOR --- */
-.scroll-indicator {
+.wheel {
+  width: 3px;
+  height: 8px;
+  background: #00ff88;
+  border-radius: 2px;
   position: absolute;
-  bottom: 40px;
+  top: 8px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10;
+  animation: scrollAnim 1.5s infinite;
 }
 
+@keyframes scrollAnim {
+  0% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, 15px); }
+}
 
+/* Responsividade */
+@media (max-width: 768px) {
+  .chat-card {
+    width: 90vw;
+    right: -10px;
+  }
+}
 </style>
