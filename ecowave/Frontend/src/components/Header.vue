@@ -134,14 +134,23 @@ export default {
 }
 
 .main-header.header-scrolled {
-  background-color: #000;
-  height: 100px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  /* Fundo preto com 40% de transparência */
+  background-color: rgba(0, 0, 0, 0.142); 
+  
+  /* O segredo para o efeito de vidro embaçado */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  
+  height: 100px; /* Reduzi levemente a altura no scroll para dar dinamismo */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Linha sutil separadora */
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
 /* Efeito de preenchimento quando o menu abre */
+/* Altere esta parte */
 .main-header:has(.menu-item:hover) {
-  background-color: #000;
+  background-color: rgba(0, 0, 0, 0.8); /* Um pouco mais escuro para ler o menu, mas não 100% preto */
+  backdrop-filter: blur(20px);
 }
 
 /* LOGO */
@@ -203,12 +212,12 @@ export default {
 /* MEGA MENU (GLASSMORPISM) */
 .mega-menu {
   position: absolute;
-  top: 100px; 
+  top: 85px; 
   left: 50%;
   transform: translateX(-50%) translateY(15px);
   width: 720px;
-  background: rgba(10, 10, 10, 0.98);
-  backdrop-filter: blur(20px);
+ background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(25px);
   padding: 45px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;
