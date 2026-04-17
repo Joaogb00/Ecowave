@@ -16,14 +16,14 @@
     </div>
 
     <div class="acoes-adm">
-      <router-link to="" class="card-funcoes">
+      <router-link to="/users" class="card-funcoes">
         <div class="card-icon"><i class="bi bi-people-fill"></i></div>
-        <h3>Ver usuários</h3>
+        <h3>Gerenciar usuários</h3>
         <p>Gerencie permissões e perfis cadastrados.</p>
       </router-link>
-      <router-link to="/loja" class="card-funcoes" >
+      <router-link to="/lojaadm" class="card-funcoes" >
         <div class="card-icon"><i class="bi bi-bag-check-fill"></i></div>
-        <h3>Ver loja</h3>
+        <h3>Gerenciar loja</h3>
         <p>Administre produtos e inventário.</p>
       </router-link>
       <router-link class="card-funcoes">
@@ -77,7 +77,7 @@ export default {
 .sky-layer {
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
-  background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070');
+  /* background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070'); */
   background-size: cover;
   background-position: top;
   z-index: 1;
@@ -90,6 +90,7 @@ export default {
   animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   color: #1a1a1a;
   margin-bottom: 60px;
+  margin-top: 50px;
 }
 
 .eyebrow {

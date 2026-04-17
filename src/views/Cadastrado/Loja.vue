@@ -1,6 +1,6 @@
 <template>
   <section class="section-loja">
-    <router-link to="/administrador">Voltar</router-link>
+   <router-link to="/cadastrado" class="btn-cta">Voltar ao Painel</router-link>
     <header class="loja-header">
       <div class="header-content">
         <span class="eyebrow">EcoWave Marketplace</span>
@@ -103,6 +103,7 @@ export default {
   border-bottom: 2px solid #000;
   padding-bottom: 20px;
   animation: fadeInDown 0.8s ease;
+  margin-top: 50px;
 }
 
 .eyebrow {
@@ -287,7 +288,28 @@ export default {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
+.btn-cta {
+  position: absolute;
+  top: 40px; left: 40px;
+  text-decoration: none;
+  color: white;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #000;
+}
+.btn-cta:hover{
+  position: absolute;
+  top: 40px; left: 40px;
+  text-decoration: none;
+  color: black;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #000;
+}
 /* Overlay sutil */
 .overlay-texture {
   position: fixed;

@@ -1,0 +1,126 @@
+<template>
+  <section class="hero-minhaconta">
+    <HeaderAdm/>
+
+    <div class="account-card">
+      <span class="eyebrow">Terminal de Usuário</span>
+      <h1 class="title-medium">Minha <span class="text-highlight">Conta.</span></h1>
+
+      <form @submit.prevent="handleUpdate" class="account-form">
+        <div class="input-group">
+          <label>NOME COMPLETO</label>
+          <input type="text" v-model="userForm.nome" required />
+          <div class="input-line"></div>
+        </div>
+
+        <div class="input-group">
+          <label>EMAIL DE ACESSO</label>
+          <input type="email" v-model="userForm.email" required />
+          <div class="input-line"></div>
+        </div>
+
+        <div class="input-group">
+          <label>NOVA SENHA (DEIXE VAZIO PARA MANTER)</label>
+          <input type="password" v-model="userForm.senha" placeholder="••••••••" />
+          <div class="input-line"></div>
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="btn-save" :disabled="loading">
+            {{ loading ? 'PROCESSANDO...' : 'SALVAR ALTERAÇÕES' }}
+          </button>
+          
+          <button type="button" @click="showLogoutModal = true" class="btn-exit">
+            SAIR DA CONTA
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div v-if="showLogoutModal" class="modal-overlay">
+      <div class="modal-box">
+        <h3>DESEJA SAIR?</h3>
+        <p>Sua sessão será encerrada com segurança.</p>
+        <button @click="logout" class="btn-confirm">SAIR AGORA</button>
+        <button @click="showLogoutModal = false" class="btn-cancel">CANCELAR</button>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script>
+import HeaderAdm from '@/components/Administrador/HeaderAdm.vue';
+import HeaderCad from '@/components/Cadatrastrados/HeaderCad.vue';
+import axios from 'axios';
+
+export default {
+  name: 'MinhaConta',
+  components: { HeaderAdm },
+  data() {
+    return {
+      loading: false,
+      showLogoutModal: false,
+      userForm: {
+        id: sessionStorage.getItem('ecoWave_userId'),
+        nome: sessionStorage.getItem('ecoWave_user') || '',
+        email: sessionStorage.getItem('ecoWave_email') || '',
+        senha: ''
+      }
+    };
+  },
+  methods: {
+async handleUpdate() {
+  if (!this.userForm.id) {
+    alert("Erro: Sessão expirada.");
+    return;
+  }
+
+  this.loading = true;
+
+  try {
+    const url = `http://localhost:3000/EditarUsuario/${this.userForm.id}`;
+    
+    const response = await axios.put(url, {
+      nome: this.userForm.nome,
+      email: this.userForm.email,
+      senha: this.userForm.senha || undefined 
+    });
+
+    // AQUI ESTÁ O PONTO CHAVE:
+    // O seu Service retorna { message: "...", usuario: { id, nome, email } }
+    if (response.data && response.data.usuario) {
+      const userUpdated = response.data.usuario;
+
+      // Atualiza o sessionStorage com os dados REAIS que voltaram do banco
+      sessionStorage.setItem('ecoWave_user', userUpdated.nome);
+      sessionStorage.setItem('ecoWave_email', userUpdated.email);
+      
+      alert("Perfil atualizado com sucesso!");
+      this.userForm.senha = ""; 
+    }
+  } catch (error) {
+    // ... erro
+  } finally {
+    this.loading = false;
+  }
+},
+    logout() {
+      sessionStorage.clear();
+      this.$router.push('/');
+    }
+  }
+}
+</script>
+
+<style scoped>
+/* Estilos simplificados para o exemplo */
+.hero-minhaconta { height: 100vh; display: flex; align-items: center; justify-content: center; background: #f9f9f9; flex-direction: column;}
+.account-card { background: white; padding: 40px; border: 1px solid #ddd; width: 400px; }
+.input-group { margin-bottom: 20px; }
+.input-group label { display: block; font-size: 10px; color: #999; font-weight: bold; }
+.input-group input { width: 100%; border: none; border-bottom: 1px solid #eee; padding: 10px 0; outline: none; }
+.btn-save { width: 100%; background: #000; color: white; padding: 15px; border: none; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
+.btn-exit { width: 100%; background: transparent; border: 1px solid #ff4d4d; color: #ff4d4d; padding: 10px; cursor: pointer; }
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
+.modal-box { background: white; padding: 30px; text-align: center; }
+</style>

@@ -82,7 +82,7 @@
     <div class="header-right">
 
       <!-- <router-link to="/Loja" class="icon-coins"><i class="bi bi-bag"></i></router-link> -->
-      <router-link to="/minhaconta" class="router-icon"><i class="bi bi-person-circle user-icon"></i></router-link>
+      <router-link to="/minhacontaadm" class="router-icon"><i class="bi bi-person-circle user-icon"></i></router-link>
       <!-- <router-link to="/cadastrado" class="btn-cta">COMECE AGORA</router-link> -->
       
     </div>

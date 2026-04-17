@@ -191,4 +191,31 @@ export default {
     font-size: 1rem;
   }
 }
+.btn-cta {
+  position: absolute;
+  top: 40px; left: 40px;
+  text-decoration: none;
+  color: white;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #000;
+}
+.btn-cta:hover{
+  position: absolute;
+  top: 40px; left: 40px;
+  text-decoration: none;
+  color: black;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #000;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 </style>
