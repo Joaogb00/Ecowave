@@ -15,7 +15,7 @@
     "@tensorflow/tfjs-backend-webgl": "^4.22.0",
     "@vueuse/core": "^14.3.0",
     "@vueuse/motion": "^3.0.3",
-    "axios": "^1.16.1",
+    "axios": "^1.17.0",
     "gsap": "^3.15.0",
     "html5-qrcode": "^2.3.8",
     "intro.js": "^8.3.2",
