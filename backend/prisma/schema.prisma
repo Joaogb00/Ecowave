@@ -1,0 +1,213 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id                   String               @id @default(uuid())
+  nome                 String
+  email                String               @unique
+  senha                String
+  papel                String               @default("USUARIO")
+  totalPontos          Int                  @default(0)
+  nivelId              String?
+  criadoEm             DateTime             @default(now())
+  editadoEm            DateTime             @updatedAt
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+  blockedUntil         DateTime?
+  failedAttempts       Int                  @default(0)
+  verificationCode     String?
+  verificationExpires  DateTime?
+  status               String               @default("Em análise")
+  denuncias            Denuncia[]
+  pontosCriados        PontoDeColeta[]      @relation("CriadorPonto")
+  registros            RegistroReciclagem[]
+  solicitacoesUpgrade  SolicitacaoUpgrade[]
+  conquistas           UsuarioConquista[]
+  desafios             UsuarioDesafio[]
+  recompensas          UsuarioRecompensa[]
+  nivel                Nivel?               @relation(fields: [nivelId], references: [id])
+fotoPerfil            String?
+  @@map("usuarios")
+}
+
+model Nivel {
+  id            String    @id @default(uuid())
+  nome          String
+  pontosMinimos Int
+  icone         String?
+  criadoEm      DateTime  @default(now())
+  editadoEm     DateTime  @updatedAt
+  usuarios      Usuario[]
+
+  @@map("niveis")
+}
+
+model Material {
+  id           String                @id @default(uuid())
+  nome         String
+  fatorCO2     Float
+  pontosPorKg  Int
+  criadoEm     DateTime              @default(now())
+  editadoEm    DateTime              @updatedAt
+  pontosColeta PontoColetaMaterial[]
+  registros    RegistroReciclagem[]
+
+  @@map("materiais")
+}
+
+model PontoDeColeta {
+  id                String                @id @default(uuid())
+  nome              String
+  endereco          String
+  CEP               String?
+  criadoPorId       String?
+  ativo             Boolean               @default(true)
+  criadoEm          DateTime              @default(now())
+  editadoEm         DateTime              @updatedAt
+  lat               Float
+  lng               Float
+  horarioAbertura   String                @default("08:00")
+  horarioFechamento String                @default("18:00")
+  denuncias         Denuncia[]
+  materiais         PontoColetaMaterial[]
+  criadoPor         Usuario?              @relation("CriadorPonto", fields: [criadoPorId], references: [id])
+  registros         RegistroReciclagem[]
+
+  @@map("pontos_coleta")
+}
+
+model PontoColetaMaterial {
+  id            String        @id @default(uuid())
+  pontoColetaId String
+  materialId    String
+  material      Material      @relation(fields: [materialId], references: [id])
+  pontoColeta   PontoDeColeta @relation(fields: [pontoColetaId], references: [id])
+
+  @@map("ponto_coleta_materiais")
+}
+
+model RegistroReciclagem {
+  id             String        @id @default(uuid())
+  usuarioId      String
+  materialId     String
+  pontoColetaId  String
+  pesoKg         Float
+  co2Economizado Float?
+  pontosGanhos   Float?
+  criadoEm       DateTime      @default(now())
+  editadoEm      DateTime      @updatedAt
+  material       Material      @relation(fields: [materialId], references: [id])
+  pontoColeta    PontoDeColeta @relation(fields: [pontoColetaId], references: [id])
+  usuario        Usuario       @relation(fields: [usuarioId], references: [id])
+
+  @@map("registros_reciclagem")
+}
+
+model Conquista {
+  id                String             @id @default(uuid())
+  nome              String
+  descricao         String?
+  icone             String?
+  pontosNecessarios Float
+  criadoEm          DateTime           @default(now())
+  editadoEm         DateTime           @updatedAt
+  usuarios          UsuarioConquista[]
+
+  @@map("conquistas")
+}
+
+model UsuarioConquista {
+  id            String    @id @default(uuid())
+  usuarioId     String
+  conquistaId   String
+  conquistadoEm DateTime  @default(now())
+  conquista     Conquista @relation(fields: [conquistaId], references: [id])
+  usuario       Usuario   @relation(fields: [usuarioId], references: [id])
+
+  @@map("usuario_conquistas")
+}
+
+model Desafio {
+  id               String           @id @default(uuid())
+  titulo           String
+  descricao        String?
+  metaKg           Float
+  recompensaPontos Int
+  dataInicio       DateTime
+  dataFim          DateTime
+  criadoEm         DateTime         @default(now())
+  editadoEm        DateTime         @updatedAt
+  usuarios         UsuarioDesafio[]
+
+  @@map("desafios")
+}
+
+model UsuarioDesafio {
+  id          String  @id @default(uuid())
+  usuarioId   String
+  desafioId   String
+  progressoKg Float   @default(0)
+  concluido   Boolean @default(false)
+  desafio     Desafio @relation(fields: [desafioId], references: [id])
+  usuario     Usuario @relation(fields: [usuarioId], references: [id])
+
+  @@map("usuario_desafios")
+}
+
+model Recompensa {
+  id                String              @id @default(uuid())
+  nome              String
+  descricao         String?
+  pontosNecessarios Int
+  empresaParceira   String?
+  estoque           Int                 @default(0)
+  criadoEm          DateTime            @default(now())
+  editadoEm         DateTime            @updatedAt
+  imagem            String?
+  usuarios          UsuarioRecompensa[]
+
+  @@map("recompensas")
+}
+
+model UsuarioRecompensa {
+  id           String     @id @default(uuid())
+  usuarioId    String
+  recompensaId String
+  endereco     String
+  resgatadoEm  DateTime   @default(now())
+  recompensa   Recompensa @relation(fields: [recompensaId], references: [id])
+  usuario      Usuario    @relation(fields: [usuarioId], references: [id])
+
+  @@map("usuario_recompensas")
+}
+
+model Denuncia {
+  id            String        @id @default(uuid())
+  usuarioId     String
+  pontoColetaId String
+  titulo        String
+  descricao     String
+  status        String?       @default("ABERTA")
+  criadoEm      DateTime      @default(now())
+  pontoColeta   PontoDeColeta @relation(fields: [pontoColetaId], references: [id])
+  usuario       Usuario       @relation(fields: [usuarioId], references: [id])
+
+  @@map("denuncias")
+}
+
+model SolicitacaoUpgrade {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  status          String   @default("PENDENTE")
+  justificativa   String?
+  dataSolicitacao DateTime @default(now()) @map("data_solicitacao")
+  usuario         Usuario  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("solicitacoes_upgrade")
+}
