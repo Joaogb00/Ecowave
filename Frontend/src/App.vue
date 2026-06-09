@@ -261,22 +261,301 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style>
-/* Reset e Base */
-* { padding: 0; margin: 0; box-sizing: border-box; }
-body { font-family: 'Inter', sans-serif; background: #f9f9f9; color: #111; overflow-x: hidden; }
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css');
 
-/* Mantém seus estilos originais, apenas garantindo fluidez */
-.game-viewport-canvas { 
-    display: block; 
-    width: 100%; 
-    height: 100%; 
-    cursor: pointer; 
-    background: #ffffff;
-    /* Otimização de renderização */
-    image-rendering: -webkit-optimize-contrast; 
-    image-rendering: crisp-edges;
+/* --- MODAIS COM GLASSMORPHISM EDITORIAL DE FORMULARIO.VUE --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(249, 249, 249, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Restante do CSS permanece igual ao seu original... */
+.modal-content {
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  padding: 40px;
+  background: #ffffff;
+  border: 1px solid rgba(17, 17, 17, 0.06);
+  border-radius: 20px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.05);
+  animation: scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-icon {
+  font-size: 2.5rem;
+  color: #111111;
+  margin-bottom: 15px;
+}
+
+.modal-content h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.02em;
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+}
+
+.modal-content p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #444444;
+  margin-bottom: 25px;
+}
+
+/* --- BOTÃO OPERACIONAL PREMIUM (OVAL) --- */
+.action-button {
+  width: 100%;
+  background: #111111;
+  color: #ffffff;
+  padding: 1.1rem;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid #111111;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.action-button:hover {
+  background: #333333;
+  border-color: #333333;
+  transform: translateY(-1px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* --- GRID DE FUNDO DA PLATAFORMA --- */
+.hero-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(to right, #f1f1f1 1px, transparent 1px),
+                    linear-gradient(to bottom, #f1f1f1 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  opacity: 0.7;
+  z-index: 1;
+}
+
+/* --- TELA IMMERSIVA OFFLINE --- */
+.offline-immersive-stage {
+  min-height: 100vh;
+  background: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  font-family: 'Inter', sans-serif;
+}
+
+.offline-card-glass {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 800px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 50px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.03);
+  border: 1px solid rgba(17, 17, 17, 0.03);
+}
+
+/* --- TIPOGRAFIA EDITORIAL --- */
+.eyebrow {
+  color: #777777;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.title-editorial {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  color: #111111;
+  margin-bottom: 15px;
+}
+
+.description-editorial {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #666666;
+  max-width: 450px;
+  margin-bottom: 35px;
+}
+
+/* --- GAME ENGINE LAYOUT --- */
+.game-simulation-box {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid rgba(17, 17, 17, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 25px;
+}
+
+.game-dashboard {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  display: flex;
+  gap: 20px;
+  z-index: 5;
+}
+
+.score-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #777777;
+}
+
+.score-tag span {
+  color: #111111;
+}
+
+.game-viewport-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 700 / 220;
+  background: #fafafa;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* --- OVERLAYS DO GAME --- */
+.game-over-overlay, .game-start-prompt {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  padding: 20px;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.game-over-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  color: #aa2222;
+  margin-bottom: 5px;
+  letter-spacing: 0.03em;
+}
+
+.game-over-action {
+  font-size: 0.75rem;
+  color: #777777;
+  margin-bottom: 15px;
+}
+
+.btn-game-restart {
+  max-width: 200px;
+  padding: 0.7rem 1.5rem;
+  font-size: 0.7rem;
+}
+
+.game-start-prompt {
+  background: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+}
+
+.game-start-prompt p {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #111111;
+}
+
+kbd {
+  background: #f1f1f1;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  font-family: inherit;
+}
+
+.offline-card-footer {
+  font-size: 0.7rem;
+  color: #999999;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* --- TIMING E ANIMAÇÕES --- */
+.modal-fade-enter-active, .modal-fade-leave-active { transition: opacity 0.3s; }
+.modal-fade-enter-from, .modal-fade-leave-to { opacity: 0; }
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* --- RESPONSIVIDADE --- */
+.show-on-mobile { display: none; }
+
+@media (max-width: 768px) {
+  .offline-card-glass { padding: 30px 20px; }
+  .hide-on-mobile { display: none; }
+  .show-on-mobile { display: inline; }
+  .title-editorial { font-size: 2.2rem; }
+}
+
+/* --- RADAR SIGNAL ICON --- */
+.signal-radar-icon {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 20px;
+}
+.core-dot {
+  position: absolute;
+  top: 17px; left: 17px;
+  width: 6px; height: 6px;
+  background: #111;
+  border-radius: 50%;
+}
+.pulse-ring {
+  position: absolute;
+  width: 40px; height: 40px;
+  border: 2px solid #111;
+  border-radius: 50%;
+  animation: pulse 2s infinite ease-out;
+  opacity: 0;
+}
+@keyframes pulse {
+  0% { transform: scale(0.1); opacity: 0; }
+  50% { opacity: 0.4; }
+  100% { transform: scale(1.2); opacity: 0; }
+}
 </style>

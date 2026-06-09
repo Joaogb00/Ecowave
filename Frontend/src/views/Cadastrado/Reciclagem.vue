@@ -17,9 +17,6 @@
           Selecione o <span class="text-highlight">Material</span> e encontre um
           <span class="text-highlight">Ponto de Coleta.</span>
         </h2>
-        <p class="subtitle">
-          Escolha o material, digite seu CEP (opcional) e selecione o ponto de coleta mais conveniente.
-        </p>
       </div>
 
       <div class="map-layout">
@@ -30,38 +27,22 @@
               <option value="" disabled>Selecione um material</option>
               <option v-for="m in materiaisBanco" :key="m.id" :value="m.id">{{ m.nome }}</option>
             </select>
-            <small class="hint-text">Selecione o tipo de material que deseja reciclar.</small>
           </div>
 
           <div class="form-group">
-            <label>CEP para busca <span style="font-weight:400;color:#aaa">(opcional)</span></label>
+            <label>CEP para busca (opcional)</label>
             <div class="cep-row">
-              <input
-                type="text"
-                v-model="formManual.cep"
-                class="custom-input"
-                placeholder="00000-000"
-                maxlength="9"
-                @input="formatarCep"
-              >
-              <button
-                type="button"
-                class="btn-buy btn-icon-label"
-                @click="buscarPontosPorCep"
-                :disabled="buscandoPontos"
-              >
+              <input type="text" v-model="formManual.cep" class="custom-input" placeholder="00000-000" maxlength="9" @input="formatarCep">
+              <button type="button" class="btn-buy" @click="buscarPontosPorCep" :disabled="buscandoPontos">
                 <i :class="buscandoPontos ? 'bi bi-hourglass-split spin' : 'bi bi-search'"></i>
-                {{ buscandoPontos ? 'Buscando...' : 'Buscar' }}
               </button>
             </div>
-            <small class="hint-text">Digite o CEP para filtrar pontos próximos. Deixe em branco para ver todos.</small>
           </div>
 
           <div class="form-group" v-if="pontoSelecionado">
             <label>Ponto selecionado</label>
             <div class="custom-input readonly-input material-chip">
-              <i class="bi bi-pin-map-fill"></i>
-              {{ pontoSelecionado.nome }}
+              <i class="bi bi-pin-map-fill"></i> {{ pontoSelecionado.nome }}
             </div>
             <small class="hint-text">
               <i class="bi bi-geo-alt-fill"></i> {{ pontoSelecionado.endereco }}
@@ -99,7 +80,6 @@
           <div class="map-container-user">
             <div id="map-reciclagem" class="map-frame-user"></div>
           </div>
-
           <div class="locations-sidebar">
             <div class="sidebar-header">
               <span class="eyebrow">
@@ -109,28 +89,14 @@
                 {{ pontosBanco.length }} encontrado(s)
               </span>
             </div>
-
             <div class="locations-list">
-              <label
-                v-for="ponto in pontosBanco"
-                :key="ponto.id"
-                class="location-item"
-                :class="{ 'location-item-selected': pontoId == ponto.id }"
-              >
+              <label v-for="ponto in pontosBanco" :key="ponto.id" class="location-item" :class="{ 'location-item-selected': pontoId == ponto.id }">
                 <div class="location-radio">
-                  <input
-                    type="radio"
-                    name="pontoColeta"
-                    :value="ponto.id"
-                    v-model="pontoId"
-                    @change="selecionarPonto(ponto)"
-                  >
+                  <input type="radio" name="pontoColeta" :value="ponto.id" v-model="pontoId" @change="selecionarPonto(ponto)">
                 </div>
                 <div class="location-info">
                   <strong>{{ ponto.nome }}</strong>
-                  <p class="location-address">
-                    <i class="bi bi-geo-alt-fill"></i> {{ ponto.endereco }}
-                  </p>
+                  <p class="location-address"><i class="bi bi-geo-alt-fill"></i> {{ ponto.endereco }}</p>
                   <p v-if="ponto.materiais || ponto.materiaisAceitos" class="location-materiais">
                     <i class="bi bi-recycle"></i> {{ formatarMateriaisExibicao(ponto.materiais || ponto.materiaisAceitos) }}
                   </p>
@@ -138,14 +104,11 @@
                     <span v-if="ponto._distancia" class="distancia-tag">
                       <i class="bi bi-geo"></i> {{ ponto._distancia }}
                     </span>
-                    <span
-                      :class="['status-tag', obterStatusPonto(ponto).aberto ? 'tag-aberto' : 'tag-fechado']"
-                    >
+                    <span :class="['status-tag', obterStatusPonto(ponto).aberto ? 'tag-aberto' : 'tag-fechado']">
                       <i :class="obterStatusPonto(ponto).aberto ? 'bi bi-door-open-fill' : 'bi bi-door-closed-fill'"></i>
                       {{ obterStatusPonto(ponto).texto }}
                     </span>
                   </div>
-
                   <div class="location-actions" @click.prevent>
                     <button class="btn-card-primary" @click.stop="irParaLocal(ponto)">
                       <i class="bi bi-signpost-fill"></i> Ir para o Local
@@ -167,6 +130,7 @@
       </div>
     </div>
 
+    <!-- Modal IA Intro -->
     <div v-if="etapa === 'ia_intro'" class="modal-overlay">
       <div class="modal-content modal-intro">
         <div class="intro-icon-wrap">
@@ -195,16 +159,11 @@
       </div>
     </div>
 
+    <!-- Modal IA Scanning -->
     <div v-if="etapa === 'ia_scanning'" class="modal-overlay">
       <div class="modal-content">
         <div class="video-wrapper">
-          <video
-            ref="videoRef"
-            autoplay
-            playsinline
-            muted
-            :class="{ 'frozen': isWaitingConfirmation }"
-          ></video>
+          <video ref="videoRef" autoplay playsinline muted :class="{ 'frozen': isWaitingConfirmation }"></video>
           <div v-if="isLoadingIA" class="status-overlay">
             <i class="bi bi-cpu-fill" style="margin-right:6px;"></i>Carregando IA...
           </div>
@@ -242,6 +201,7 @@
       </div>
     </div>
 
+    <!-- Pontos IA -->
     <div v-if="etapa === 'ia_pontos'" class="selecionar-ponto-wrapper">
       <section class="admin-section">
         <div class="header-box">
@@ -285,7 +245,7 @@
                   <i class="bi bi-map-fill"></i> Google Maps
                 </button>
                 <button class="btn-rota-inline btn-uber-inline" @click="abrirUber(pontoSelecionadoIA)">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="flex-shrink:0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
                   Uber
                 </button>
                 <button class="btn-rota-inline btn-99-inline" @click="abrir99(pontoSelecionadoIA)">
@@ -295,11 +255,7 @@
             </div>
 
             <div class="form-actions-column">
-              <button
-                v-if="pontoSelecionadoIA"
-                @click="irParaLocal(pontoSelecionadoIA)"
-                class="btn-buy full-width btn-icon-label"
-              >
+              <button v-if="pontoSelecionadoIA" @click="irParaLocal(pontoSelecionadoIA)" class="btn-buy full-width btn-icon-label">
                 <i class="bi bi-signpost-fill"></i> Ir para o Local
               </button>
               <button @click="voltarAoInicio" class="btn-secondary full-width btn-icon-label">
@@ -329,31 +285,20 @@
                   :class="{ 'location-item-selected': pontoIdIA == ponto.id }"
                 >
                   <div class="location-radio">
-                    <input
-                      type="radio"
-                      name="pontoColetaIa"
-                      :value="ponto.id"
-                      v-model="pontoIdIA"
-                      @change="selecionarPontoIA(ponto)"
-                    >
+                    <input type="radio" name="pontoColetaIa" :value="ponto.id" v-model="pontoIdIA" @change="selecionarPontoIA(ponto)">
                   </div>
                   <div class="location-info">
                     <strong>{{ ponto.nome }}</strong>
-                    <p class="location-address">
-                      <i class="bi bi-geo-alt-fill"></i> {{ ponto.endereco }}
-                    </p>
+                    <p class="location-address"><i class="bi bi-geo-alt-fill"></i> {{ ponto.endereco }}</p>
                     <p v-if="ponto.materiais || ponto.materiaisAceitos" class="location-materiais">
                       <i class="bi bi-recycle"></i> {{ formatarMateriaisExibicao(ponto.materiais || ponto.materiaisAceitos) }}
                     </p>
                     <div class="location-meta">
-                      <span
-                        :class="['status-tag', obterStatusPonto(ponto).aberto ? 'tag-aberto' : 'tag-fechado']"
-                      >
+                      <span :class="['status-tag', obterStatusPonto(ponto).aberto ? 'tag-aberto' : 'tag-fechado']">
                         <i :class="obterStatusPonto(ponto).aberto ? 'bi bi-door-open-fill' : 'bi bi-door-closed-fill'"></i>
                         {{ obterStatusPonto(ponto).texto }}
                       </span>
                     </div>
-
                     <div class="location-actions" @click.prevent>
                       <button class="btn-card-primary" @click.stop="irParaLocal(ponto)">
                         <i class="bi bi-signpost-fill"></i> Ir para o Local
@@ -376,6 +321,7 @@
       </section>
     </div>
 
+    <!-- Modal Rota -->
     <div v-if="modalRota.visivel" class="modal-overlay" @click.self="modalRota.visivel = false">
       <div class="modal-content modal-rota">
         <span class="eyebrow">Escolha o transporte</span>
@@ -424,12 +370,14 @@
       </div>
     </div>
 
+    <!-- FAB IA -->
     <button class="fab-ia" @click="iniciarIA" :title="isLoadingIA ? 'Carregando IA...' : 'Identificar material com IA'">
       <i v-if="isLoadingIA" class="bi bi-hourglass-split spin fab-icon"></i>
       <i v-else class="bi bi-cpu-fill fab-icon"></i>
       <span class="fab-label">{{ isLoadingIA ? 'Carregando...' : 'Identificar com IA' }}</span>
     </button>
 
+    <!-- Toast -->
     <div class="toast-container">
       <transition name="toast-fade">
         <div v-if="mostrarToast" class="toast-message">
@@ -474,22 +422,22 @@ const pontosBanco    = ref<any[]>([]);
 const formManual       = ref({ cep: '', materialId: '' });
 const pontoId          = ref('');
 const pontoSelecionado = ref<any>(null);
-const buscandoPontos  = ref(false);
+const buscandoPontos   = ref(false);
 
 // ─── IA ───────────────────────────────────────────────────────────────────────
-const videoRef             = ref<HTMLVideoElement | null>(null);
-const isLoadingIA          = ref(true);
+const videoRef              = ref<HTMLVideoElement | null>(null);
+const isLoadingIA           = ref(true);
 const isWaitingConfirmation = ref(false);
-const currentSuggestion    = ref<any>(null);
-const materialIA           = ref<MaterialMapEntry | null>(null);
-const perguntaIA           = ref('');
-const materialFinalIA      = ref<any>(null);
+const currentSuggestion     = ref<any>(null);
+const materialIA            = ref<MaterialMapEntry | null>(null);
+const perguntaIA            = ref('');
+const materialFinalIA       = ref<any>(null);
 
 const pontosFiltradosIA  = ref<any[]>([]);
 const pontoIdIA          = ref('');
 const pontoSelecionadoIA = ref<any>(null);
 
-let model:   any           = null;
+let model: any = null;
 let stream: MediaStream | null = null;
 
 // ─── MAPAS ────────────────────────────────────────────────────────────────────
@@ -513,9 +461,7 @@ const exibirToast = (msg: string) => {
   setTimeout(() => { mostrarToast.value = false; }, 2800);
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TRATAMENTO ROBUSTO DE DADOS VINDOS DO BACKEND (Evita [object Object])
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── TRATAMENTO ROBUSTO DE DADOS ──────────────────────────────────────────────
 const extrairTextoMateriais = (campo: any): string => {
   if (!campo) return '';
   if (typeof campo === 'string') return campo;
@@ -523,15 +469,11 @@ const extrairTextoMateriais = (campo: any): string => {
     return campo.map(item => {
       if (!item) return '';
       if (typeof item === 'string') return item;
-      if (typeof item === 'object') {
-        return item.nome ?? item.material?.nome ?? item.titulo ?? '';
-      }
+      if (typeof item === 'object') return item.nome ?? item.material?.nome ?? item.titulo ?? '';
       return String(item);
     }).join(' ');
   }
-  if (typeof campo === 'object') {
-    return campo.nome ?? campo.titulo ?? '';
-  }
+  if (typeof campo === 'object') return campo.nome ?? campo.titulo ?? '';
   return String(campo);
 };
 
@@ -587,9 +529,7 @@ const tentarAbrirApp = (deepLink: string, fallbackUrl: string, delay = 2000) => 
   const startTime = Date.now();
   window.location.href = deepLink;
   setTimeout(() => {
-    if (Date.now() - startTime < delay + 500) {
-      window.open(fallbackUrl, '_blank');
-    }
+    if (Date.now() - startTime < delay + 500) window.open(fallbackUrl, '_blank');
   }, delay);
 };
 
@@ -607,12 +547,8 @@ const abrirUber = (ponto: any) => {
   const lat  = parseFloat(ponto.lat ?? ponto.latitude ?? '');
   const lng  = parseFloat(ponto.lng ?? ponto.longitude ?? '');
   const nome = encodeURIComponent(ponto.nome ?? 'Ponto de Coleta');
-  
-  // Formata o endereço garantindo a inclusão do número se ele existir separadamente
   let enderecoTexto = ponto.endereco ?? ponto.logradouro ?? '';
-  if (ponto.numero && !enderecoTexto.includes(ponto.numero)) {
-    enderecoTexto += `, ${ponto.numero}`;
-  }
+  if (ponto.numero && !enderecoTexto.includes(ponto.numero)) enderecoTexto += `, ${ponto.numero}`;
   const end = encodeURIComponent(enderecoTexto);
 
   if (!isNaN(lat) && !isNaN(lng)) {
@@ -624,7 +560,6 @@ const abrirUber = (ponto: any) => {
   }
   modalRota.visivel = false;
 };
-
 
 const abrir99 = (ponto: any) => {
   if (!ponto) return;
@@ -644,7 +579,7 @@ const abrir99 = (ponto: any) => {
 const irParaLocal = (ponto: any) => abrirGoogleMaps(ponto);
 const abrirModalRota = (ponto: any) => { modalRota.ponto = ponto; modalRota.visivel = true; };
 
-// ─── MAPA MANUAL & FILTRAGEM INTELIGENTE ──────────────────────────────────────
+// ─── MAPA MANUAL ──────────────────────────────────────────────────────────────
 const initMapManual = () => {
   if (mapManual.value) return;
   mapManual.value = L.map('map-reciclagem', { zoomControl: false }).setView([-19.892, -43.812], 13);
@@ -680,7 +615,7 @@ const adicionarMarcadorManual = (ponto: any) => {
 
 const limparMarcadoresManual = () => {
   pontosBanco.value.forEach((p: any) => {
-    if (p._marker && mapManual.value) { mapManual.value.removeLayer(p._marker); }
+    if (p._marker && mapManual.value) mapManual.value.removeLayer(p._marker);
     p._marker = null;
   });
 };
@@ -708,30 +643,21 @@ const renderizarPontosManual = (lista: any[]) => {
 
 const filtrarPontosPorMaterial = () => {
   const id = formManual.value.materialId;
-  if (!id) {
-    renderizarPontosManual(pontosTodos.value);
-    return;
-  }
+  if (!id) { renderizarPontosManual(pontosTodos.value); return; }
   const mat = materiaisBanco.value.find((m) => m.id == id);
-  if (!mat) { 
-    renderizarPontosManual(pontosTodos.value); 
-    return; 
-  }
+  if (!mat) { renderizarPontosManual(pontosTodos.value); return; }
 
   const nomeBase = removerAcentos((mat.nome ?? '').toLowerCase().trim());
-  const palavrasChave = nomeBase.split(/\s+/).filter(p => p.length > 2);
+  const palavrasChave = nomeBase.split(/\s+/).filter((p: string) => p.length > 2);
 
   const filtrados = pontosTodos.value.filter((p: any) => {
     const textoMateriais = extrairTextoMateriais(p.materiais ?? p.materiaisAceitos ?? p.Material);
     const textoPonto = removerAcentos(textoMateriais.toLowerCase());
-    
     if (textoPonto.includes(nomeBase)) return true;
-    if (palavrasChave.length > 0) {
-      return palavrasChave.some(palavra => textoPonto.includes(palavra));
-    }
+    if (palavrasChave.length > 0) return palavrasChave.some((palavra: string) => textoPonto.includes(palavra));
     return false;
   });
-  
+
   if (filtrados.length === 0) {
     exibirToast(`Nenhum ponto estrito para "${mat.nome}". Mostrando abrangência total.`);
     renderizarPontosManual(pontosTodos.value);
@@ -741,7 +667,7 @@ const filtrarPontosPorMaterial = () => {
 };
 
 const onMaterialChange = () => {
-  pontoId.value         = '';
+  pontoId.value = '';
   pontoSelecionado.value = null;
   filtrarPontosPorMaterial();
 };
@@ -754,7 +680,7 @@ const mostrarTodosPontos = () => {
   renderizarPontosManual(pontosTodos.value);
 };
 
-// ─── BUSCA POR CEP ───────────────────────────────────────────────────────────
+// ─── BUSCA POR CEP ────────────────────────────────────────────────────────────
 const buscarPontosPorCep = async () => {
   const cepLimpo = formManual.value.cep.replace(/\D/g, '');
   if (cepLimpo.length < 5) return;
@@ -766,11 +692,11 @@ const buscarPontosPorCep = async () => {
       const mat = materiaisBanco.value.find((m) => m.id == id);
       if (mat) {
         const nomeBase = removerAcentos((mat.nome ?? '').toLowerCase().trim());
-        const palavrasChave = nomeBase.split(/\s+/).filter(p => p.length > 2);
+        const palavrasChave = nomeBase.split(/\s+/).filter((p: string) => p.length > 2);
         base = pontosTodos.value.filter((p: any) => {
           const tm = extrairTextoMateriais(p.materiais ?? p.materiaisAceitos ?? p.Material);
           const tp = removerAcentos(tm.toLowerCase());
-          return tp.includes(nomeBase) || palavrasChave.some(w => tp.includes(w));
+          return tp.includes(nomeBase) || palavrasChave.some((w: string) => tp.includes(w));
         });
       }
     }
@@ -792,10 +718,7 @@ const buscarPontosPorCep = async () => {
 watch(() => formManual.value.cep, (val) => {
   const cepLimpo = val.replace(/\D/g, '');
   if (!mapManual.value) return;
-  if (cepLimpo.length < 5) {
-    filtrarPontosPorMaterial();
-    return;
-  }
+  if (cepLimpo.length < 5) { filtrarPontosPorMaterial(); return; }
   buscarPontosPorCep();
 });
 
@@ -810,24 +733,20 @@ const initMapIa = () => {
 
 const limparMarcadoresIa = () => {
   pontosFiltradosIA.value.forEach((p: any) => {
-    if (p._marker && mapIa.value) { mapIa.value.removeLayer(p._marker); }
+    if (p._marker && mapIa.value) mapIa.value.removeLayer(p._marker);
     p._marker = null;
   });
 };
 
 const filtrarPontosPorMaterialIA = () => {
-  if (!materialFinalIA.value) {
-    pontosFiltradosIA.value = [];
-    return;
-  }
+  if (!materialFinalIA.value) { pontosFiltradosIA.value = []; return; }
   const nomeBase = removerAcentos((materialFinalIA.value.nome ?? '').toLowerCase());
-  const palavrasChave = nomeBase.split(' ').filter(p => p.length > 2);
+  const palavrasChave = nomeBase.split(' ').filter((p: string) => p.length > 2);
   const filtrados = pontosTodos.value.filter((p: any) => {
     const tm = extrairTextoMateriais(p.materiais ?? p.materiaisAceitos ?? p.Material);
     const mp = removerAcentos(tm.toLowerCase());
-    return mp.includes(nomeBase) || palavrasChave.some(palavra => mp.includes(palavra));
+    return mp.includes(nomeBase) || palavrasChave.some((palavra: string) => mp.includes(palavra));
   });
-  
   limparMarcadoresIa();
   pontosFiltradosIA.value = filtrados.map((p: any) => ({ ...p }));
   pontosFiltradosIA.value.forEach((ponto: any) => {
@@ -839,7 +758,7 @@ const filtrarPontosPorMaterialIA = () => {
     ponto._marker = marker;
   });
   if (pontosFiltradosIA.value.length > 0 && mapIa.value) {
-    const p0 = pontosFiltradosIA.value[0];
+    const p0  = pontosFiltradosIA.value[0];
     const lat = parseFloat(p0.lat ?? p0.latitude ?? '');
     const lng = parseFloat(p0.lng ?? p0.longitude ?? '');
     if (!isNaN(lat) && !isNaN(lng)) mapIa.value.setView([lat, lng], 13);
@@ -863,7 +782,7 @@ const selecionarPontoIA = (ponto: any) => {
   }
 };
 
-// ─── PROCESSAMENTO IA LOOP E CÂMERA ───────────────────────────────────────────
+// ─── IA LOOP & CÂMERA ─────────────────────────────────────────────────────────
 const findMaterialFromLabel = (rawName: string) => {
   const entry = Object.entries(MATERIAL_MAP).find(([k]) => k.includes(rawName));
   return entry ? entry[1] : null;
@@ -882,7 +801,9 @@ const loopIA = async () => {
         isWaitingConfirmation.value = true;
         materialIA.value = mapped;
         currentSuggestion.value = { labelPt: mapped.labelPt, reciclavel: mapped.reciclavel };
-        perguntaIA.value = mapped.reciclavel ? `Isso é um(a) ${mapped.labelPt}?` : `Isso parece ser ${mapped.labelPt}, que não é reciclável. Está correto?`;
+        perguntaIA.value = mapped.reciclavel
+          ? `Isso é um(a) ${mapped.labelPt}?`
+          : `Isso parece ser ${mapped.labelPt}, que não é reciclável. Está correto?`;
         break;
       }
     }
@@ -949,13 +870,11 @@ const tryNextSuggestion = () => {
 const confirmarMaterialIA = async () => {
   const mapped = materialIA.value;
   if (!mapped) return;
-  const encontrado = materiaisBanco.value.find(m => 
+  const encontrado = materiaisBanco.value.find(m =>
     removerAcentos(m.nome.toLowerCase()).includes(removerAcentos(mapped.labelPt.toLowerCase()))
   );
-  
   isWaitingConfirmation.value = false;
   currentSuggestion.value = null;
-  
   if (!encontrado) {
     exibirToast('Material detectado, mas sem pontos específicos configurados no sistema.');
     etapa.value = 'inicio';
@@ -967,15 +886,14 @@ const confirmarMaterialIA = async () => {
   etapa.value = 'ia_pontos';
 };
 
-const volverAoInicio = () => {
+const voltarAoInicio = () => {
   etapa.value = 'inicio';
   materialFinalIA.value = null;
   pontoSelecionadoIA.value = null;
   pontoIdIA.value = '';
 };
-const voltarAoInicio = volverAoInicio;
 
-// ─── WATCHERS DE RENDERIZAÇÃO ─────────────────────────────────────────────────
+// ─── WATCHERS ─────────────────────────────────────────────────────────────────
 watch(() => etapa.value, async (nova) => {
   if (nova === 'inicio' || nova === 'manual_form') {
     await nextTick();
@@ -997,7 +915,7 @@ const atualizarPopupsAbertos = () => {
   });
 };
 
-// ─── LIFECYCLE HOOKS ──────────────────────────────────────────────────────────
+// ─── LIFECYCLE ────────────────────────────────────────────────────────────────
 onMounted(async () => {
   timerInterval = setInterval(() => {
     agora.value = new Date();
@@ -1009,11 +927,11 @@ onMounted(async () => {
       axios.get('http://localhost:3000/Materiais'),
       axios.get('http://localhost:3000/PontosDeColeta'),
     ]);
-    
+
     let listaMat: any = resMat.data;
     if (listaMat?.materiais && Array.isArray(listaMat.materiais)) listaMat = listaMat.materiais;
     materiaisBanco.value = Array.isArray(listaMat) ? listaMat : [];
-    
+
     const dp = resPon.data;
     const listaPon: any = dp?.pontos ?? dp?.Pontos ?? dp?.pontosDeColeta ?? dp?.PontosDeColeta ?? dp?.data ?? dp?.pontosBanco ?? dp;
     pontosTodos.value = Array.isArray(listaPon) ? listaPon : [];
@@ -1034,6 +952,8 @@ onMounted(async () => {
 onUnmounted(() => {
   clearInterval(timerInterval);
   stream?.getTracks().forEach(t => t.stop());
+  if (mapManual.value) { mapManual.value.remove(); mapManual.value = null; }
+  if (mapIa.value) { mapIa.value.remove(); mapIa.value = null; }
 });
 </script>
 
@@ -1057,7 +977,9 @@ onUnmounted(() => {
   letter-spacing: 1px;
   margin-bottom: 20px;
   border-radius: 4px;
+  transition: opacity 0.2s;
 }
+.btn-cta:hover { opacity: 0.8; }
 .main-title {
   font-size: 2.4rem;
   font-weight: 900;
@@ -1131,7 +1053,7 @@ onUnmounted(() => {
   position: relative;
   background: #ececec;
 }
-.map-frame-user { width: 100%; height: 100%; z-index: 1; }
+.map-frame-user { width: 100%; height: 100%; min-height: 300px; z-index: 1; }
 
 .locations-sidebar {
   flex: 1;
@@ -1203,32 +1125,54 @@ onUnmounted(() => {
 .btn-secondary { background: none; border: none; color: #666; cursor: pointer; padding: 10px; font-weight: 600; font-size: 13px; }
 .btn-icon-label { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
 .full-width { width: 100%; margin-top: 6px; }
+.form-actions-column { margin-top: auto; }
 
-.fab-ia { position: fixed; bottom: 32px; right: 32px; z-index: 800; background: #000; color: #fff; border: none; border-radius: 50px; padding: 14px 22px; display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 700; font-size: 13px; text-transform: uppercase; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25); transition: transform 0.2s; }
+.fab-ia { position: fixed; bottom: 32px; right: 32px; z-index: 800; background: #000; color: #fff; border: none; border-radius: 50px; padding: 14px 22px; display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 700; font-size: 13px; text-transform: uppercase; box-shadow: 0 4px 20px rgba(0,0,0,0.25); transition: transform 0.2s; }
 .fab-ia:hover { transform: translateY(-2px); }
 .fab-icon { font-size: 1.1rem; }
 
-.modal-overlay { position: fixed; inset: 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); z-index: 900; display: flex; align-items: center; justify-content: center; padding: 20px; }
-.modal-content { width: 100%; max-width: 460px; padding: 32px; background: #fff; border: 1px solid #eee; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08); border-radius: 8px; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); z-index: 900; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal-content { width: 100%; max-width: 460px; padding: 32px; background: #fff; border: 1px solid #eee; box-shadow: 0 20px 60px rgba(0,0,0,0.08); border-radius: 8px; }
 .video-wrapper { position: relative; width: 100%; aspect-ratio: 4/3; background: #000; border-radius: 6px; overflow: hidden; }
 video { width: 100%; height: 100%; object-fit: cover; }
+video.frozen { filter: grayscale(0.3) brightness(0.9); }
+.status-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); color: #fff; font-weight: 700; font-size: 13px; }
 .scan-frame { position: absolute; inset: 20px; pointer-events: none; }
 .scan-corner { position: absolute; width: 16px; height: 16px; border-color: #fff; border-style: solid; }
 .scan-corner.tl { top:0; left:0; border-width: 3px 0 0 3px; }
 .scan-corner.tr { top:0; right:0; border-width: 3px 3px 0 0; }
 .scan-corner.bl { bottom:0; left:0; border-width: 0 0 3px 3px; }
 .scan-corner.br { bottom:0; right:0; border-width: 0 3px 3px 0; }
-
-.scan-line {
-  position: absolute; left: 0; right: 0; height: 2px;
-  background: rgba(255,255,255,.6);
-  animation: scanMove 2s ease-in-out infinite;
-}
+.scan-line { position: absolute; left: 0; right: 0; height: 2px; background: rgba(255,255,255,.6); animation: scanMove 2s ease-in-out infinite; }
 @keyframes scanMove { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+.scan-hint { text-align: center; font-size: 12px; color: #666; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.ia-feedback { margin-top: 16px; }
+.product-title { font-size: 1.2rem; font-weight: 800; margin: 0 0 8px; }
+.product-description { font-size: 13px; color: #666; margin: 0 0 12px; }
+.modal-actions { display: flex; gap: 8px; }
+.modal-intro { text-align: center; }
+.intro-icon-wrap { margin-bottom: 16px; }
+.intro-icon { font-size: 2.5rem; color: #000; }
+.intro-steps { list-style: none; padding: 0; margin: 16px 0; text-align: left; }
+.intro-steps li { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-size: 13px; line-height: 1.5; }
+.intro-dica { font-size: 12px; background: #f5f5f5; padding: 12px; border-radius: 4px; text-align: left; margin-bottom: 20px; display: flex; gap: 8px; align-items: flex-start; }
 
-.empty-state, .empty-state-inline { padding: 30px; color: #aaa; font-size: 13px; text-align: center; }
+.btn-rota { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px; border: 1px solid #eee; background: #fff; border-radius: 6px; cursor: pointer; margin-bottom: 8px; transition: background 0.15s; }
+.btn-rota:hover { background: #f9f9f9; }
+.rota-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #f0f0f0; flex-shrink: 0; }
+.rota-icon-uber { background: #000; }
+.rota-icon-99 { background: #f5a623; color: #fff; font-weight: 900; font-size: 13px; }
+.rota-label { display: flex; flex-direction: column; text-align: left; }
+.rota-label strong { font-size: 13px; font-weight: 700; }
+.rota-label small { font-size: 11px; color: #999; }
 
-.toast-container { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); z-index: 2000; }
+.selecionar-ponto-wrapper { padding-top: 10px; }
+.admin-section { padding: 0; }
+
+.empty-state { padding: 30px; color: #aaa; font-size: 13px; text-align: center; }
+.empty-state-inline { padding: 14px; color: #aaa; font-size: 13px; text-align: center; border: 1px dashed #ddd; border-radius: 4px; }
+
+.toast-container { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); z-index: 2000; pointer-events: none; }
 .toast-message { background: #000; color: #fff; padding: 14px 24px; border-radius: 4px; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 20px rgba(0,0,0,.2); }
 .toast-fade-enter-active { animation: fadeInUp 0.35s; }
 .toast-fade-leave-active { animation: fadeInUp 0.35s reverse; }
@@ -1242,5 +1186,7 @@ video { width: 100%; height: 100%; object-fit: cover; }
 @media (max-width: 900px) {
   .map-layout { grid-template-columns: 1fr; }
   .form-column { border-right: none; border-bottom: 1px solid #eee; }
+  .map-and-list-column { height: auto; }
+  .map-container-user { height: 280px; }
 }
 </style>

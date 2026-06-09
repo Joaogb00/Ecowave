@@ -5,8 +5,8 @@ import { AppError } from "../../middlewares/AppError";
 class PostPontoColetaController {
     async handle(req: Request, res: Response) {
         try {
-            // Captura o ID do usuário autenticado passado pelo middleware
-            const criadoPorId = req.user_id; 
+            // CORREÇÃO MÁGICA PARA O 403: Tenta pegar o ID de todas as formas que o middleware possa ter injetado
+            const criadoPorId = req.user_id || (req as any).userId || (req as any).usuarioId; 
             
             const { 
                 nome, 
@@ -28,14 +28,19 @@ class PostPontoColetaController {
                 return res.status(400).json({ error: "O campo materiaisIds deve ser um array." });
             }
 
+            // Se por algum motivo o ID do usuário não foi capturado no Token JWT pelo middleware
+            if (!criadoPorId) {
+                return res.status(403).json({ error: "Usuário não identificado ou permissões insuficientes para criar pontos." });
+            }
+
             const postPontoColetaService = new PostPontoColetaService();
 
             const novoPonto = await postPontoColetaService.execute({
                 nome,
                 endereco,
                 CEP,
-                lat,
-                lng,
+                lat: Number(lat),
+                lng: Number(lng),
                 horarioAbertura,
                 horarioFechamento,
                 criadoPorId,
@@ -51,7 +56,7 @@ class PostPontoColetaController {
                 return res.status(error.statusCode).json({ error: error.message });
             }
             
-            console.error(error);
+            console.error("Erro interno no PostPontoColetaController:", error);
             return res.status(500).json({ error: "Erro interno ao cadastrar ponto de coleta." });
         }
     }

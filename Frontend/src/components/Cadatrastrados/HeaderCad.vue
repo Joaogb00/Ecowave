@@ -1,128 +1,124 @@
 <template>
-  <header class="main-header" :class="{ 'header-scrolled': isScrolled }">
-    <div class="header-left">
-       <router-link to="/cadastrado" ><img class="img-logo" src="../../assets/img/logo.png" alt="EcoWave Logo"></router-link>
-      
-    </div>
+  <div>
+    <header class="main-header" :class="{ 'header-scrolled': isScrolled }">
+      <div class="header-container">
+        
+        <div class="header-left-group">
+          <button class="hamburger-btn" @click="toggleSidebar" aria-label="Abrir menu lateral">
+            <span class="bar-line"></span>
+            <span class="bar-line"></span>
+            <span class="bar-line"></span>
+          </button>
 
-    <nav class="header-center">
-      <div class="menu-item">
-        <span class="links">Nossa Visão <i class="chevron"></i></span>
-        <div class="mega-menu">
-          <div class="mega-content fade-in">
-            <div class="column intro-col">
-              <div class="img-wrapper">
-                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=400" alt="EcoWave Tech" class="menu-img">
-              </div>
-              <h3>O Movimento</h3>
-              <p>Liderado por <strong>João Gabriel</strong> e <strong>Juan Pablo</strong>, redefinindo o descarte global.</p>
-              <a href="#" class="more-link">Nossa história <span class="arrow">→</span></a>
-            </div>
-            
-            <div class="column">
-              <h3>Sobre a EcoWave</h3>
-              <ul class="menu-list">
-                <li><a href="#" class="menu-link-item">Conheça nossas ferramentas <span class="line"></span></a></li>
-                <li><a href="#" class="menu-link-item">Manifesto Sustentável <span class="line"></span></a></li>
-                <li><a href="#" class="menu-link-item">Certificações Green <span class="line"></span></a></li>
-              </ul>
-              <h3 class="spacer-h3">Empresas</h3>
-              <ul class="menu-list">
-                <li><a href="#" class="menu-link-item">Logística Reversa <span class="line"></span></a></li>
-                <li><a href="#" class="menu-link-item">Dashboards ESG <span class="line"></span></a></li>
-                <li><a href="#" class="menu-link-item">Relatórios de Impacto <span class="line"></span></a></li>
-              </ul>
-            </div>
+          <router-link to="/cadastrado" class="logo-link">
+            <img class="img-logo" src="../../assets/img/logo.png" alt="EcoWave Logo">
+          </router-link>
+        </div>
+
+        <div class="header-right-group">
+          <router-link to="/Loja" class="icon-nav-link" aria-label="Loja">
+            <i class="bi bi-bag"></i>
+          </router-link>
+          
+          <router-link to="/denuncia" class="icon-nav-link" aria-label="Denúncias">
+            <i class="bi bi-chat"></i>
+          </router-link>
+          
+          <router-link to="/pontos" class="icon-nav-link" aria-label="Pontos de Coleta">
+            <i class="bi bi-geo-alt-fill"></i>
+          </router-link>
+          
+          <router-link to="/minhaconta" class="router-icon" aria-label="Minha Conta">
+            <i class="bi bi-person-circle user-icon"></i>
+          </router-link>
+
+          <router-link to="/reciclagem" class="btn-primary-nav">
+            RECICLAR AGORA
+          </router-link>
+        </div>
+
+      </div>
+    </header>
+
+    <transition name="drawer-slide">
+      <div class="sidebar-wrapper" v-if="isSidebarOpen">
+        <div class="sidebar-backdrop" @click="toggleSidebar"></div>
+        <div class="sidebar-content">
+          
+          <div class="sidebar-top">
+            <span class="sidebar-brand">ECOWAVE</span>
+            <button class="close-drawer-btn" @click="toggleSidebar" aria-label="Fechar menu">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <p class="sidebar-section-title">CONTEÚDO DA PLATAFORMA</p>
+          
+          <nav class="sidebar-nav-list">
+            <router-link to="/reciclagem" class="mobile-menu-item-btn" @click="toggleSidebar">
+              <i class="bi bi-recycle"></i> Reciclar Agora
+            </router-link>
+            <router-link to="/Loja" class="mobile-menu-item-link" @click="toggleSidebar">
+              <i class="bi bi-bag"></i> Marketplace EcoWave
+            </router-link>
+            <router-link to="/pontos" class="mobile-menu-item-link" @click="toggleSidebar">
+              <i class="bi bi-geo-alt-fill"></i> Encontrar Pontos (IoT)
+            </router-link>
+            <router-link to="/denuncia" class="mobile-menu-item-link" @click="toggleSidebar">
+              <i class="bi bi-chat"></i> Central de Denúncias
+            </router-link>
+            <router-link to="/minhaconta" class="mobile-menu-item-link" @click="toggleSidebar">
+              <i class="bi bi-person-circle"></i> Meu Perfil
+            </router-link>
+          </nav>
+
+          <div class="sidebar-footer">
+            <p>EcoWave App v2.0 // 2026</p>
           </div>
         </div>
       </div>
-
-      <div class="menu-item">
-        <span class="links">Soluções <i class="chevron"></i></span>
-        <div class="mega-menu">
-          <div class="mega-content fade-in">
-            <div class="column">
-              <div class="img-wrapper">
-                <img src="https://images.unsplash.com/photo-1532033375034-a29004bd9039?auto=format&fit=crop&w=400" alt="Coleta" class="menu-img">
-              </div>
-              <h3>Serviços</h3>
-              <p>Consultoria ambiental personalizada para sua planta industrial.</p>
-            </div>
-            <div class="column">
-              <h3>Coleta Inteligente</h3>
-              <ul class="menu-list">
-                <li><a href="#" class="menu-link-item">Agendamento 24h <span class="line"></span></a></li>
-                <li><a href="#" class="menu-link-item">Rastreamento Blockchain <span class="line"></span></a></li>
-                <li><a href="#" class="menu-link-item">Pontos EcoWave IoT <span class="line"></span></a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="menu-item">
-        <span class="links">Recursos <i class="chevron"></i></span>
-        <div class="mega-menu">
-          <div class="mega-content fade-in">
-            <div class="column">
-              <h3>Blog & News</h3>
-              <p>As últimas tendências em sustentabilidade e economia circular.</p>
-              <a href="#" class="more-link">Ver artigos <span class="arrow">→</span></a>
-            </div>
-            <div class="column">
-              <h3>Suporte</h3>
-              <p>Central de ajuda e canais de contato direto para suporte técnico.</p>
-              <a href="#" class="more-link">Abrir chamado <span class="arrow">→</span></a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </nav>
-
-    <div class="header-right">
-
-      <router-link to="/Loja" class="icon-coins"><i class="bi bi-bag"></i></router-link>
-      <router-link to="/denuncia" class="icon-coins"><i class="bi bi-chat"></i></router-link>
-      <router-link to="/pontos" class="icon-coins"><i class="bi bi-geo-alt-fill"></i></router-link>
-      <router-link to="/minhaconta" class="router-icon"><i class="bi bi-person-circle user-icon"></i></router-link>
-      <!-- <router-link to="/notficacoes" class="router-icon"><i class="bi bi-bell-fill"></i></router-link> -->
-      <router-link to="/reciclagem" class="btn-cta">RECICLAR AGORA</router-link>
-      
-    </div>
-    
-  </header>
+    </transition>
+  </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      isScrolled: false
-    }
-  },
-  mounted() {
-    window.addEventListener('scroll', this.handleScroll);
-  },
-  unmounted() {
-    window.removeEventListener('scroll', this.handleScroll);
-  },
-  methods: {
-    handleScroll() {
-      this.isScrolled = window.scrollY > 50;
-    }
-  }
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+
+const isScrolled = ref(false)
+const isSidebarOpen = ref(false)
+
+const toggleSidebar = () => { 
+  isSidebarOpen.value = !isSidebarOpen.value 
 }
+
+const handleScroll = () => { 
+  isScrolled.value = window.scrollY > 50 
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll, { passive: true })
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 </script>
+
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css");
 
-/* === RESET E CONFIGURAÇÃO CORE === */
+/* --- CONFIGURAÇÃO CORE INTERNA --- */
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
 }
 
-/* === HEADER PRINCIPAL === */
+/* ===== HEADER PRINCIPAL ===== */
 .main-header {
   position: fixed;
   top: 0;
@@ -130,35 +126,45 @@ export default {
   width: 100%;
   height: 100px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0 clamp(20px, 5vw, 60px);
-  background-color: transparent;
-  color: #fff;
   z-index: 1000;
-  box-sizing: border-box;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: transparent;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Scroll ativo: Ganha fundo branco sutil */
 .main-header.header-scrolled {
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  height: 85px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  height: clamp(65px, 7vh, 80px);
+  background-color: #ffffff !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
 }
 
-.main-header:has(.menu-item:hover) {
-  background-color: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
+/* Hover no bloco: Fundo preto */
+.main-header:hover {
+  background-color: #000000 !important;
 }
 
-/* === LOGO === */
+.header-container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 4vw, 3.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left-group {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2vw, 2.2rem);
+}
+
+/* --- LOGO INTERATIVA --- */
 .logo-link {
   display: block;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .logo-link:hover {
@@ -166,383 +172,184 @@ export default {
 }
 
 .img-logo {
-  height: 70px;
+  height: 75px;
   width: auto;
   display: block;
-  filter: brightness(1);
-  transition: filter 0.3s ease;
+  transition: filter 0.4s ease;
 }
 
-.logo-link:hover .img-logo {
-  filter: brightness(1.1);
+/* Mantém a logo legível dependendo do estado do fundo */
+.main-header:hover .img-logo {
+  filter: brightness(0) invert(1);
 }
 
-/* === NAVEGAÇÃO CENTRAL === */
-.header-center {
-  display: flex;
-  gap: clamp(30px, 4vw, 50px);
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.menu-item {
-  position: static;
-  padding: 35px 0;
-}
-
-.links {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.813rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1.3px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+/* --- BOTÃO HAMBÚRGUER --- */
+.hamburger-btn {
+  background: none;
+  border: none;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.9);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px;
+  outline: none;
 }
 
-.links::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  width: 0;
+.bar-line {
+  width: 22px;
   height: 2px;
-  background: linear-gradient(90deg, #fff, rgba(255, 255, 255, 0.5));
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: #000000; /* Inicia preto */
+  border-radius: 99px;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s ease, background-color 0.4s ease;
 }
 
-.menu-item:hover .links {
-  color: #fff;
+/* Muda para branco ao passar o mouse (fundo escurece) */
+.main-header:hover .bar-line {
+  background-color: #ffffff;
+}
+.hamburger-btn:hover .bar-line:nth-child(2) { width: 16px; }
+
+/* --- GRUPO DIREITO (ÍCONES TOTALMENTE PRETOS POR PADRÃO) --- */
+.header-right-group {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.6rem, 1.8vw, 1.6rem);
 }
 
-.menu-item:hover .links::after {
-  width: 100%;
-}
-
-.header-center:hover .menu-item:not(:hover) .links {
-  opacity: 0.5;
-}
-
-/* === CHEVRON ICON (SVG) === */
-.chevron-icon {
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.menu-item:hover .chevron-icon {
-  transform: rotate(180deg);
-}
-
-/* === MEGA MENU === */
-.mega-menu {
-  position: absolute;
-  top: 90px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  width: 750px;
-  background: rgba(10, 10, 10, 0.95);
-  backdrop-filter: blur(30px) saturate(150%);
-  -webkit-backdrop-filter: blur(30px) saturate(150%);
-  padding: 50px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-  opacity: 0;
-  visibility: hidden;
-  transition: 
-    opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-    visibility 0s 0.35s;
-  pointer-events: none;
-}
-
-.menu-item:hover .mega-menu {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
-  pointer-events: auto;
-  transition-delay: 0s;
-}
-
-/* === MEGA CONTENT === */
-.mega-content {
-  display: grid;
-  grid-template-columns: 1.3fr 1fr;
-  gap: 45px;
-  animation: fadeSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes fadeSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* === COLUNAS === */
-.column h3 {
-  font-size: 0.688rem;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 18px;
-  letter-spacing: 1.8px;
-  font-weight: 700;
-}
-
-.column p {
-  font-size: 0.938rem;
-  color: rgba(255, 255, 255, 0.75);
-  line-height: 1.65;
-}
-
-.menu-section {
-  margin-bottom: 35px;
-}
-
-.menu-section:last-child {
-  margin-bottom: 0;
-}
-
-/* === LISTAS E LINKS === */
-.menu-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.menu-list li {
-  margin-bottom: 14px;
-}
-
-.menu-link-item {
+.icon-nav-link, .router-icon {
+  font-size: 1.25rem;
+  color: #000000; /* Definido totalmente preto na inicialização */
   text-decoration: none;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.938rem;
-  font-weight: 500;
-  display: inline-block;
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  padding-bottom: 2px;
-}
-
-.menu-link-item::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 1.5px;
-  background: linear-gradient(90deg, #fff, rgba(255, 255, 255, 0.3));
-  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.menu-link-item:hover {
-  color: #fff;
-  transform: translateX(4px);
-}
-
-.menu-link-item:hover::after {
-  width: 100%;
-}
-
-/* === MORE LINK === */
-.more-link {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 18px;
-  color: #fff;
+  transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s ease;
+}
+
+/* Quando passar o mouse sobre os ícones individualmente */
+.icon-nav-link:hover, .router-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Inversão dinâmica: passam a ser brancos quando o header vira preto */
+.main-header:hover .icon-nav-link,
+.main-header:hover .router-icon {
+  color: #ffffff;
+}
+
+/* Ícone de Usuário Customizado */
+.user-icon { font-size: 1.45rem; }
+
+/* Botão Principal CTA (Reciclar Agora) */
+.btn-primary-nav {
+  background: #000000;
+  color: #ffffff;
   text-decoration: none;
-  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
   font-weight: 600;
-  transition: gap 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: clamp(0.5rem, 1vw, 0.7rem) clamp(0.9rem, 2vw, 1.6rem);
+  font-size: clamp(0.65rem, 1vw, 0.75rem);
+  border-radius: 999px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.arrow-icon {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Inverte o botão para fundo branco quando o header fica preto */
+.main-header:hover .btn-primary-nav {
+  background: #ffffff !important;
+  color: #111111 !important;
 }
 
-.more-link:hover {
-  gap: 12px;
+.btn-primary-nav:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255,255,255,0.15);
 }
 
-.more-link:hover .arrow-icon {
-  transform: translateX(3px);
+/* ===== DRAWER MOBILE ===== */
+.sidebar-wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
 }
-
-/* === IMAGENS === */
-.img-wrapper {
-  position: relative;
-  overflow: hidden;
-  border-radius: 16px;
-  margin-bottom: 24px;
-  background: #000;
-  aspect-ratio: 16/10;
-}
-
-.menu-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.75;
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.img-overlay {
+.sidebar-backdrop {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.6));
-  opacity: 0.6;
-  transition: opacity 0.6s ease;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
 }
-
-.column:hover .menu-img {
-  opacity: 1;
-  transform: scale(1.08);
+.sidebar-content {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.98);
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 20px 0 60px rgba(0,0,0,0.1);
 }
-
-.column:hover .img-overlay {
-  opacity: 0.3;
-}
-
-/* === RESOURCE CARDS === */
-.resource-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  padding: 28px;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.resource-card:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-4px);
-}
-
-.resource-icon {
-  font-size: 2rem;
-  margin-bottom: 16px;
-  filter: grayscale(0.3);
-  transition: filter 0.3s ease;
-}
-
-.resource-card:hover .resource-icon {
-  filter: grayscale(0);
-}
-
-/* === BOTÕES DO HEADER === */
-.header-right {
+.sidebar-top {
   display: flex;
   align-items: center;
-  gap: 24px;
+  justify-content: space-between;
+  margin-bottom: 3rem;
 }
+.sidebar-brand { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.4rem; color: #111; }
+.close-drawer-btn { background: none; border: none; cursor: pointer; color: #111; transition: transform 0.3s; }
+.close-drawer-btn:hover { transform: rotate(90deg); }
+.sidebar-section-title { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em; color: #888; margin-bottom: 1.5rem; }
 
-.btn-login {
-  color: rgba(255, 255, 255, 0.85);
-  text-decoration: none;
+.sidebar-nav-list { display: flex; flex-direction: column; gap: 0.8rem; flex-grow: 1; }
+
+.mobile-menu-item-link {
   font-family: 'Inter', sans-serif;
-  font-size: 0.813rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  transition: background 0.2s;
+}
+.mobile-menu-item-link:hover { background: rgba(0,0,0,0.04); color: #000; }
+
+.mobile-menu-item-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
   font-weight: 600;
-  letter-spacing: 1.1px;
-  transition: color 0.3s ease;
-  position: relative;
-}
-
-.btn-login::after {
-  content: '';
-  position: absolute;
-  bottom: -3px;
-  left: 0;
-  width: 0;
-  height: 1.5px;
-  background: #fff;
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.btn-login:hover {
+  background: #111;
   color: #fff;
-}
-
-.btn-login:hover::after {
-  width: 100%;
-}
-
-.btn-cta {
-  position: relative;
-  padding: 16px 32px;
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  font-size: 0.813rem;
-  letter-spacing: 1.2px;
-  cursor: pointer;
-  background: #fff;
-  color: #000;
-  border: none;
-  border-radius: 8px;
   text-decoration: none;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 1rem;
+  border-radius: 99px;
+  margin-bottom: 1rem;
 }
 
-.btn-text {
-  position: relative;
-  z-index: 1;
-}
+.sidebar-footer { font-size: 0.7rem; color: #aaa; }
 
-.btn-shine {
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+/* ===== INTERFACE DE TRANSIÇÕES ===== */
+.drawer-slide-enter-active, .drawer-slide-leave-active {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-.btn-cta:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+.drawer-slide-enter-from .sidebar-content, .drawer-slide-leave-to .sidebar-content {
+  transform: translateX(-100%);
 }
+.drawer-slide-enter-from, .drawer-slide-leave-to { opacity: 0; }
 
-.btn-cta:hover .btn-shine {
-  left: 100%;
-}
-
-.btn-cta:active {
-  transform: translateY(0);
-}
-
-/* === RESPONSIVIDADE === */
-@media (max-width: 1200px) {
-  .mega-menu {
-    width: 650px;
-  }
-  
-  .header-center {
-    gap: 35px;
-  }
-}
-
-@media (max-width: 992px) {
-  .main-header {
-    padding: 0 30px;
-  }
-  
-  .header-center {
-    display: none; /* Implementar menu mobile */
-  }
+/* ===== MEDIA QUERIES RESPONSIVAS ===== */
+@media (max-width: 480px) {
+  .header-container { padding: 0 1rem; }
+  .icon-nav-link { font-size: 1.1rem; }
+  .user-icon { font-size: 1.3rem; }
+  .btn-primary-nav { padding: 0.45rem 0.9rem; font-size: 0.65rem; }
 }
 </style>
